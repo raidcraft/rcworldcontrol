@@ -3,7 +3,6 @@ package de.raidcraft.worldcontrol;
 import com.sk89q.commandbook.CommandBook;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

@@ -41,12 +41,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sk89q.craftbook</groupId>
-            <artifactId>circuits</artifactId>
-            <version>3.3-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
             <groupId>de.raidcraft</groupId>
             <artifactId>RaidCraftCore</artifactId>
             <version>1.7-SNAPSHOT</version>
