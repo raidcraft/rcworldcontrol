@@ -3,6 +3,7 @@ package de.raidcraft.worldcontrol;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 /**
  * Author: Philip
@@ -12,15 +13,25 @@ import org.bukkit.block.Block;
 public class BlockLog {
     private String player;
     private Location location;
-    private Material material;
-    private int blockData;
+    private Material blockBeforeMaterial = Material.AIR;
+    private int blockBeforeData = 0;
+    private Material blockAfterMaterial = Material.AIR;
+    private int blockAfterData = 0;
 
-    public BlockLog(String player, Location location, Block block) {
+    public BlockLog(Player player, Location location, Block blockBefore, Block blockAfter) {
 
-        this.player = player;
+        this.player = player.getName();
         this.location = location;
-        this.material = block.getType();
-        this.blockData = block.getData();
+
+        if(blockBefore != null) {
+            this.blockBeforeMaterial = blockBefore.getType();
+            this.blockBeforeData = blockBefore.getData();
+        }
+
+        if(blockAfter != null) {
+            this.blockAfterMaterial = blockAfter.getType();
+            this.blockAfterData = blockAfter.getData();
+        }
     }
 
     public String getPlayer() {
@@ -33,13 +44,23 @@ public class BlockLog {
         return location;
     }
 
-    public Material getMaterial() {
+    public Material getBlockBeforeMaterial() {
 
-        return material;
+        return blockBeforeMaterial;
     }
 
-    public int getBlockData() {
+    public int getBlockBeforeData() {
 
-        return blockData;
+        return blockBeforeData;
+    }
+
+    public Material getBlockAfterMaterial() {
+
+        return blockAfterMaterial;
+    }
+
+    public int getBlockAfterData() {
+
+        return blockAfterData;
     }
 }

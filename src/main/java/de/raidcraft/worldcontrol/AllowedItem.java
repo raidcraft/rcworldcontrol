@@ -9,15 +9,17 @@ import org.bukkit.Material;
  */
 public class AllowedItem {
     private Material material;
+    private int blockData;
     private boolean blockBreak;
     private boolean blockPlace;
     private boolean dropItem;
     private long regenerationTime;
-    private int placeDistance;
+    private int localPlaceDistance;
 
-    public AllowedItem(String materialName, int placeDistance, boolean blockBreak, boolean blockPlace, boolean dropItem, long regenerationTime) {
+    public AllowedItem(String materialName, int blockData, int placeDistance, boolean blockBreak, boolean blockPlace, boolean dropItem, long regenerationTime) {
         this.material = Material.getMaterial(materialName);
-        this.placeDistance = placeDistance;
+        this.blockData = blockData;
+        this.localPlaceDistance = placeDistance;
         this.blockBreak = blockBreak;
         this.blockPlace = blockPlace;
         this.dropItem = dropItem;
@@ -49,8 +51,8 @@ public class AllowedItem {
         return regenerationTime;
     }
 
-    public int getPlaceDistance() {
+    public int getLocalPlaceDistance() {
 
-        return placeDistance;
+        return localPlaceDistance;
     }
 }
