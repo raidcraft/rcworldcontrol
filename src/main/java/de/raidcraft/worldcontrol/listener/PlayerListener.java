@@ -3,13 +3,16 @@ package de.raidcraft.worldcontrol.listener;
 import com.silthus.raidcraft.util.RCMessaging;
 import de.raidcraft.worldcontrol.WorldControlModule;
 import de.raidcraft.worldcontrol.WorldGuardManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import sun.invoke.empty.Empty;
 
 /**
  * Author: Philip
@@ -19,7 +22,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerEmptyBucket(PlayerBucketEmptyEvent event) {
         if(event.getPlayer().hasPermission("worldcontrol.build"))
             return;
 
@@ -33,12 +36,7 @@ public class PlayerListener implements Listener {
         }
 
         //prevent lava and water placement
-        if(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if(event.getItem() != null && (event.getItem().getType() == Material.WATER_BUCKET || event.getItem().getType() == Material.LAVA_BUCKET)) {
-                event.setCancelled(true);
-                event.getPlayer().sendMessage(ChatColor.RED + "Du kannst hier nichts ausschütten!");
-            }
-        }
-
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(ChatColor.RED + "Du kannst hier nichts ausschütten!");
     }
 }
