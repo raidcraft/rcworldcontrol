@@ -13,9 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Author: Philip
@@ -32,7 +30,7 @@ public class WorldControlModule extends BukkitComponent {
     public LocalConfiguration config;
 
     private Map<Material, AllowedItem> allowedItems = new HashMap<>();
-    private Stack<BlockLog> logs = new Stack<>();
+    private List<BlockLog> logs = new ArrayList<> ();
 
     @Override
     public void enable() {
@@ -42,10 +40,27 @@ public class WorldControlModule extends BukkitComponent {
         CommandBook.registerEvents(new PlayerListener());
         loadAllowedItems();
         INSTANCE = this;
+
+        CommandBook.inst().getServer().getScheduler().scheduleAsyncRepeatingTask(CommandBook.inst(), new Runnable() {
+            public void run() {
+                saveLogs();
+            }
+        }, 5 * 20, 10 * 20);
     }
 
     public void loadAllowedItems() {
         //TODO
+    }
+
+    private void saveLogs() {
+        if(logs.size() <= 0) {
+            return;
+        }
+
+        List<BlockLog> logsCopy = logs;
+        logs = new ArrayList<>();
+
+        //TODO save logs
     }
 
     public AllowedItem getAllowedItem(Block block) throws UnknownAllowedItemException {
@@ -71,7 +86,7 @@ public class WorldControlModule extends BukkitComponent {
     }
 
     public void addBlockLog(BlockLog log) {
-        logs.push(log);
+        logs.add(log);
     }
 
     public static class LocalConfiguration extends ConfigurationBase {
