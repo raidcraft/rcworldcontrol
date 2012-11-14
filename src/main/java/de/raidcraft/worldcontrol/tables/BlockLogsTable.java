@@ -2,9 +2,17 @@ package de.raidcraft.worldcontrol.tables;
 
 import com.silthus.raidcraft.util.component.database.Table;
 import com.sk89q.commandbook.CommandBook;
+import de.raidcraft.worldcontrol.AllowedItem;
 import de.raidcraft.worldcontrol.BlockLog;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author: Philip
@@ -56,6 +64,76 @@ public class BlockLogsTable extends Table {
                             "'" + log.getLocation().getBlockZ() + "'" + "," +
                             "'" + log.getTime() + "'" +
                             ");"
+            ).execute();
+        } catch (SQLException e) {
+            CommandBook.logger().warning(e.getMessage());
+        }
+    }
+
+    public List<BlockLog> getAllLogs() {
+        List<BlockLog> blockLogs = new ArrayList<>();
+        try {
+            ResultSet resultSet = getConnection().prepareStatement(
+                    "SELECT * FROM " + getTableName() + ";").executeQuery();
+
+            while (resultSet.next()) {
+                blockLogs.add(new BlockLog(
+                        resultSet.getInt("id"),
+                        resultSet.getString("player"),
+                        new Location(
+                            Bukkit.getWorld(resultSet.getString("world")),
+                            resultSet.getDouble("x"),
+                            resultSet.getDouble("y"),
+                            resultSet.getDouble("z")
+                        ),
+                        Material.getMaterial(resultSet.getString("before_material")),
+                        resultSet.getShort("before_data"),
+                        Material.getMaterial(resultSet.getString("after_material")),
+                        resultSet.getShort("after_data"),
+                        resultSet.getString("time")
+                ));
+            }
+        }
+        catch (SQLException e) {
+        }
+        return blockLogs;
+    }
+
+    public boolean isNearBlockPlaced(Block block, AllowedItem item) {
+        try {
+            ResultSet resultSet = getConnection().prepareStatement(
+                    "SELECT * FROM " + getTableName()
+                            + " WHERE after_material = '" + item.getMaterial().name() + "'"
+                            + " AND x > '" + (block.getLocation().getBlockX() - item.getLocalPlaceDistance()) + "'"
+                            + " AND x < '" + (block.getLocation().getBlockX() + item.getLocalPlaceDistance()) + "'"
+                            + " AND y > '" + (block.getLocation().getBlockY() - item.getLocalPlaceDistance()) + "'"
+                            + " AND y < '" + (block.getLocation().getBlockY() + item.getLocalPlaceDistance()) + "'"
+                            + " AND z > '" + (block.getLocation().getBlockZ() - item.getLocalPlaceDistance()) + "'"
+                            + " AND z < '" + (block.getLocation().getBlockZ() + item.getLocalPlaceDistance()) + "';").executeQuery();
+
+            while (resultSet.next()) {
+                return true;
+            }
+        }
+        catch (SQLException e) {
+        }
+        return false;
+    }
+
+    public void deleteLog(int id) {
+        try {
+            getConnection().prepareStatement(
+                    "DELETE FROM " + getTableName() + " WHERE id =  '" + id + "'"
+            ).execute();
+        } catch (SQLException e) {
+            CommandBook.logger().warning(e.getMessage());
+        }
+    }
+
+    public void deleteAll() {
+        try {
+            getConnection().prepareStatement(
+                    "DELETE FROM " + getTableName()
             ).execute();
         } catch (SQLException e) {
             CommandBook.logger().warning(e.getMessage());

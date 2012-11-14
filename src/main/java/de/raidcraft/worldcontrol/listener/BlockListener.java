@@ -1,19 +1,19 @@
 package de.raidcraft.worldcontrol.listener;
 
+import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import de.raidcraft.worldcontrol.AllowedItem;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.WorldControlModule;
 import de.raidcraft.worldcontrol.WorldGuardManager;
-import de.raidcraft.worldcontrol.exceptions.LocalPlaceLimitReachedException;
-import de.raidcraft.worldcontrol.exceptions.NoItemDropException;
-import de.raidcraft.worldcontrol.exceptions.UnknownAllowedItemException;
+import de.raidcraft.worldcontrol.exceptions.*;
+import de.raidcraft.worldcontrol.tables.BlockLogsTable;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -22,8 +22,12 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * Description:
  */
 public class BlockListener implements Listener {
+    
 
-    @EventHandler( ignoreCancelled = true )
+    @EventHandler(
+            ignoreCancelled = true,
+            priority = EventPriority.HIGHEST
+    )
     public void onBlockPlace(BlockPlaceEvent event) {
         if(event.getPlayer().hasPermission("worldcontrol.build"))
             return;
@@ -33,30 +37,57 @@ public class BlockListener implements Listener {
             return;
 
         //check if location is region
-        if(WorldGuardManager.INSTANCE.inRegion(event.getPlayer())) {
+        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
+        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
             return;
         }
 
         try {
             AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItem(event.getBlock());
 
-            if(!WorldControlModule.INSTANCE.canPlace(event.getPlayer(), allowedItem)) {
+            // check if can placed
+            if(!allowedItem.canBlockPlace()) {
+                throw new NotAllowedItemException();
+            }
+
+            // check if farm only
+            if(region == null && allowedItem.isFarmOnly()) {
+                throw new FarmOnlyException();
+            }
+
+            // check if deep enough
+            if(allowedItem.getMaxPlaceHeight() > 0 && event.getBlock().getLocation().getBlockY() > allowedItem.getMaxPlaceHeight()) {
+                throw new NotDeepEnoughException();
+            }
+
+            // check local place limit
+            if(WorldControlModule.INSTANCE.isNearBlockPlaced(event.getBlock(), allowedItem)) {
                 throw new LocalPlaceLimitReachedException();
             }
-            WorldControlModule.INSTANCE.addBlockLog(new BlockLog(event.getPlayer(), event.getBlock().getLocation(), null, event.getBlock()));
+
+            WorldControlModule.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
             return;
         }
-        catch (UnknownAllowedItemException e) {
+        catch (NotAllowedItemException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht setzen!");
+        }
+        catch(NotDeepEnoughException e) {
+            event.getPlayer().sendMessage(ChatColor.RED + e.getMessage());
         }
         catch(LocalPlaceLimitReachedException e) {
             event.getPlayer().sendMessage(ChatColor.RED + e.getMessage());
+        }
+        catch (FarmOnlyException e) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen setzen!");
         }
 
         event.setCancelled(true);
     }
 
-    @EventHandler( ignoreCancelled = true )
+    @EventHandler(
+            ignoreCancelled = true,
+            priority = EventPriority.HIGHEST
+    )
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.getPlayer().hasPermission("worldcontrol.build"))
             return;
@@ -66,25 +97,36 @@ public class BlockListener implements Listener {
             return;
 
         //check if location is region
-        if(WorldGuardManager.INSTANCE.inRegion(event.getPlayer())) {
+        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
+        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
             return;
         }
 
         try {
             AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItem(event.getBlock());
 
-            if(!WorldControlModule.INSTANCE.canBreak(event.getPlayer(), allowedItem)) {
-                throw new UnknownAllowedItemException();
+            // check if can placed
+            if(!allowedItem.canBlockBreak()) {
+                throw new NotAllowedItemException();
             }
-            WorldControlModule.INSTANCE.addBlockLog(new BlockLog(event.getPlayer(), event.getBlock().getLocation(), event.getBlock(), null));
+
+            // check if farm only
+            if(region == null && allowedItem.isFarmOnly()) {
+                throw new FarmOnlyException();
+            }
+
+            WorldControlModule.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
             if(!allowedItem.canDropItem()) {
                 event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
                 throw new NoItemDropException();
             }
             return;
         }
-        catch (UnknownAllowedItemException e) {
+        catch (NotAllowedItemException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht abbauen!");
+        }
+        catch (FarmOnlyException e) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen abbauen!");
         }
         catch(NoItemDropException e) {
             // no message

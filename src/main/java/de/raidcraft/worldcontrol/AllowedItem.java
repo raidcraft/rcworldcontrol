@@ -14,16 +14,18 @@ public class AllowedItem {
     private boolean dropItem;
     private long regenerationTime;
     private int localPlaceDistance;
-    private int actionDeepness;
+    private int maxPlaceHeight;
+    private boolean farmOnly;
 
-    public AllowedItem(String materialName, int placeDistance, boolean blockBreak, boolean blockPlace, boolean dropItem, long regenerationTime, int actionDeepness) {
+    public AllowedItem(String materialName, int placeDistance, boolean blockBreak, boolean blockPlace, boolean dropItem, long regenerationTime, int maxPlaceHeight, boolean farmOnly) {
         this.material = Material.getMaterial(materialName);
         this.localPlaceDistance = placeDistance;
         this.blockBreak = blockBreak;
         this.blockPlace = blockPlace;
         this.dropItem = dropItem;
         this.regenerationTime = regenerationTime;
-        this.actionDeepness = actionDeepness;
+        this.maxPlaceHeight = maxPlaceHeight;
+        this.farmOnly = farmOnly;
     }
 
     public Material getMaterial() {
@@ -56,8 +58,13 @@ public class AllowedItem {
         return localPlaceDistance;
     }
 
-    public int getActionDeepness() {
+    public int getMaxPlaceHeight() {
 
-        return actionDeepness;
+        return maxPlaceHeight;
+    }
+
+    public boolean isFarmOnly() {
+
+        return farmOnly;
     }
 }

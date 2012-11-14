@@ -4,6 +4,7 @@ import com.sk89q.commandbook.CommandBook;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
@@ -19,11 +20,11 @@ public class WorldGuardManager {
         worldGuard = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
     }
 
-    public boolean inRegion(Player player) {
-        if(worldGuard.getRegionManager(player.getWorld()).getApplicableRegions(player.getLocation()).size() > 0) {
-            return true;
+    public String getLocatedRegion(Location location) {
+        for(ProtectedRegion region : worldGuard.getRegionManager(location.getWorld()).getApplicableRegions(location)) {
+            return region.getId();
         }
-        return false;
+        return null;
     }
 
 }

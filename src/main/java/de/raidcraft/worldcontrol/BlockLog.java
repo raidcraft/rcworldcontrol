@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
  * Description:
  */
 public class BlockLog {
+    private int id;
     private String player;
     private Location location;
     private Material blockBeforeMaterial = Material.AIR;
@@ -20,9 +21,9 @@ public class BlockLog {
     private int blockAfterData = 0;
     private String time;
 
-    public BlockLog(Player player, Location location, Block blockBefore, Block blockAfter) {
+    public BlockLog(String player, Location location, Block blockBefore, Block blockAfter) {
 
-        this.player = player.getName();
+        this.player = player;
         this.location = location;
         this.time = DateUtil.getCurrentDateString();
 
@@ -35,6 +36,32 @@ public class BlockLog {
             this.blockAfterMaterial = blockAfter.getType();
             this.blockAfterData = blockAfter.getData();
         }
+    }
+
+    public BlockLog(int id
+            ,String player
+            , Location location 
+            , Material blockBeforeMaterial
+            , short blockBeforeData
+            , Material blockAfterMaterial
+            , short blockAfterData
+            , String time) {
+
+        this.id = id;
+        this.player = player;
+        this.location = location;
+        this.time = time;
+
+        this.blockBeforeMaterial = blockBeforeMaterial;
+        this.blockBeforeData = blockBeforeData;
+
+        this.blockAfterMaterial = blockAfterMaterial;
+        this.blockAfterData = blockAfterData;
+    }
+
+    public int getId() {
+
+        return id;
     }
 
     public String getPlayer() {

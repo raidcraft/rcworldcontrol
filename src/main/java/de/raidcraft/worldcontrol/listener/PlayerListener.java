@@ -1,18 +1,11 @@
 package de.raidcraft.worldcontrol.listener;
 
-import com.silthus.raidcraft.util.RCMessaging;
 import de.raidcraft.worldcontrol.WorldControlModule;
 import de.raidcraft.worldcontrol.WorldGuardManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import sun.invoke.empty.Empty;
 
 /**
  * Author: Philip
@@ -31,7 +24,8 @@ public class PlayerListener implements Listener {
             return;
 
         //check if location is region
-        if(WorldGuardManager.INSTANCE.inRegion(event.getPlayer())) {
+        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getPlayer().getLocation());
+        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
             return;
         }
 

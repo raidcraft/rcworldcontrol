@@ -3,9 +3,9 @@ package de.raidcraft.worldcontrol.exceptions;
 /**
  * @author Silthus
  */
-public class UnknownAllowedItemException extends Throwable {
+public class NotAllowedItemException extends Throwable {
 
-	public UnknownAllowedItemException() {
+	public NotAllowedItemException() {
 		super("Dieser Block ist hier verboten!");
 	}
 }
