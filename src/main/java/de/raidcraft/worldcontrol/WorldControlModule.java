@@ -1,5 +1,6 @@
 package de.raidcraft.worldcontrol;
 
+import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import com.sk89q.commandbook.CommandBook;
 import com.sk89q.worldedit.LocalConfiguration;
 import com.zachsthings.libcomponents.ComponentInformation;
@@ -9,6 +10,8 @@ import com.zachsthings.libcomponents.config.Setting;
 import de.raidcraft.worldcontrol.exceptions.UnknownAllowedItemException;
 import de.raidcraft.worldcontrol.listener.BlockListener;
 import de.raidcraft.worldcontrol.listener.PlayerListener;
+import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
+import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -35,6 +38,9 @@ public class WorldControlModule extends BukkitComponent {
     @Override
     public void enable() {
 
+        ComponentDatabase.INSTANCE.registerTable(AllowedItemsTable.class, new AllowedItemsTable());
+        ComponentDatabase.INSTANCE.registerTable(BlockLogsTable.class, new BlockLogsTable());
+
         config = configure(new LocalConfiguration());
         CommandBook.registerEvents(new BlockListener());
         CommandBook.registerEvents(new PlayerListener());
@@ -60,7 +66,9 @@ public class WorldControlModule extends BukkitComponent {
         List<BlockLog> logsCopy = logs;
         logs = new ArrayList<>();
 
-        //TODO save logs
+        for(BlockLog log : logsCopy) {
+            ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).addLog(log);
+        }
     }
 
     public AllowedItem getAllowedItem(Block block) throws UnknownAllowedItemException {
@@ -74,6 +82,8 @@ public class WorldControlModule extends BukkitComponent {
         if(!item.canBlockPlace()) {
             return false;
         }
+
+        //TODO check deepness, place radius
         //TODO check in database if item is already placed in configured radius
         return false;
     }

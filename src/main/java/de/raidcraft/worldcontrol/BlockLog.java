@@ -1,5 +1,6 @@
 package de.raidcraft.worldcontrol;
 
+import com.silthus.raidcraft.util.component.DateUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,11 +18,13 @@ public class BlockLog {
     private int blockBeforeData = 0;
     private Material blockAfterMaterial = Material.AIR;
     private int blockAfterData = 0;
+    private String time;
 
     public BlockLog(Player player, Location location, Block blockBefore, Block blockAfter) {
 
         this.player = player.getName();
         this.location = location;
+        this.time = DateUtil.getCurrentDateString();
 
         if(blockBefore != null) {
             this.blockBeforeMaterial = blockBefore.getType();
@@ -62,5 +65,10 @@ public class BlockLog {
     public int getBlockAfterData() {
 
         return blockAfterData;
+    }
+
+    public String getTime() {
+
+        return time;
     }
 }
