@@ -102,6 +102,13 @@ public class WorldControlModule extends BukkitComponent {
     }
 
     public void addBlockLog(BlockLog log) {
+        for(BlockLog currLog : logs) {
+            if(log.getLocation().getBlockX() == currLog.getLocation().getBlockX()
+                    && log.getLocation().getBlockY() == currLog.getLocation().getBlockY()
+                    && log.getLocation().getBlockZ() == currLog.getLocation().getBlockZ()) {
+                return;
+            }
+        }
         logs.add(log);
     }
     
@@ -139,7 +146,7 @@ public class WorldControlModule extends BukkitComponent {
     
     public void regenerateBlockLog(BlockLog log) {
         log.getLocation().getBlock().setType(log.getBlockBeforeMaterial());
-        log.getLocation().getBlock().setData((byte)log.getBlockBeforeData());
+        log.getLocation().getBlock().setData((byte)log.getBlockBeforeData(), true);
     }
 
     public boolean isRegenerationRunning() {

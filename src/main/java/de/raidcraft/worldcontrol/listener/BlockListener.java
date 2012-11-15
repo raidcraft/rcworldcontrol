@@ -14,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -133,5 +135,37 @@ public class BlockListener implements Listener {
         }
 
         event.setCancelled(true);
+    }
+
+    @EventHandler(
+            ignoreCancelled = true,
+            priority = EventPriority.HIGHEST
+    )
+    public void onGravelSandMove(BlockPhysicsEvent event) {
+        if(event.getBlock().getType() != Material.SAND && event.getBlock().getType() != Material.GRAVEL) {
+            return;
+        }
+
+        //check if location is region
+        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
+        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+            return;
+        }
+
+        try {
+            AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItem(event.getBlock());
+
+            // check if farm only
+            if(region == null && allowedItem.isFarmOnly()) {
+                throw new FarmOnlyException();
+            }
+
+            WorldControlModule.INSTANCE.addBlockLog(new BlockLog("PHYSIC", event.getBlock().getLocation(), event.getBlock(), null));
+            return;
+        }
+        catch (Throwable e) {
+            // do nothing
+        }
+
     }
 }

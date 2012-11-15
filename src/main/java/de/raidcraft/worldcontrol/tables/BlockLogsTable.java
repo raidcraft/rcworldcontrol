@@ -50,6 +50,18 @@ public class BlockLogsTable extends Table {
 
     public void addLog(BlockLog log) {
         try {
+            // insert only if no entry exists for coordinate
+            ResultSet resultSet = getConnection().prepareStatement(
+                    "SELECT * FROM " + getTableName()
+                            + " WHERE world = '" + log.getLocation().getWorld().getName() + "'"
+                            + " AND x = '" + log.getLocation().getBlockX() + "'"
+                            + " AND y = '" + log.getLocation().getBlockY() + "'"
+                            + " AND z = '" + log.getLocation().getBlockZ() + "'").executeQuery();
+
+            while (resultSet.next()) {
+                return;
+            }
+
             getConnection().prepareStatement(
                     "INSERT INTO " + getTableName() + " (player, before_material, before_data, after_material, after_data, world, x, y, z, time) " +
                             "VALUES (" +
@@ -63,7 +75,7 @@ public class BlockLogsTable extends Table {
                             "'" + log.getLocation().getBlockY() + "'" + "," +
                             "'" + log.getLocation().getBlockZ() + "'" + "," +
                             "'" + log.getTime() + "'" +
-                            ");"
+                            ")"
             ).execute();
         } catch (SQLException e) {
             CommandBook.logger().warning(e.getMessage());
