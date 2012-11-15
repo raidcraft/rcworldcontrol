@@ -52,7 +52,7 @@ public class Commands {
         }
 
         @Command(
-                aliases = {"regenerate"},
+                aliases = {"regenerate", "regen", "reg"},
                 desc = "Force a regeneration."
         )
         @CommandPermissions("worldcontrol.regenerate")
@@ -60,7 +60,7 @@ public class Commands {
 
             if(context.argsLength() == 0) {
                 sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Laggs möglich)");
-                WorldControlModule.INSTANCE.regenerateBlocks();
+                Regeneration.INSTANCE.regenerateBlocks();
                 return;
             }
 
@@ -79,17 +79,17 @@ public class Commands {
                 }
                 completeRegeneration.remove(sender.getName());
 
-                if(WorldControlModule.INSTANCE.isRegenerationRunning()) {
+                if(Regeneration.INSTANCE.isRegenerationRunning()) {
                     sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
                     return;
                 }
 
                 sender.sendMessage(ChatColor.DARK_GREEN + "Komplettregenerierung wird durchgeführt!");
-                WorldControlModule.INSTANCE.regenerateBlocks(true);
+                Regeneration.INSTANCE.regenerateBlocks(true);
             }
 
             if(context.getString(0).equalsIgnoreCase("info")) {
-                if(WorldControlModule.INSTANCE.isRegenerationRunning()) {
+                if(Regeneration.INSTANCE.isRegenerationRunning()) {
                     sender.sendMessage(ChatColor.DARK_RED + "Es wird zurzeit eine Regenierung durchgeführt!");
                 }
                 else {

@@ -74,6 +74,11 @@ public class BlockLog {
         return location;
     }
 
+    public void setBlockBeforeMaterial(Material blockBeforeMaterial) {
+
+        this.blockBeforeMaterial = blockBeforeMaterial;
+    }
+
     public Material getBlockBeforeMaterial() {
 
         return blockBeforeMaterial;

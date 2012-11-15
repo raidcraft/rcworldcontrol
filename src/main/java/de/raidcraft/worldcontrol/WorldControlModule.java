@@ -11,7 +11,6 @@ import de.raidcraft.worldcontrol.listener.BlockListener;
 import de.raidcraft.worldcontrol.listener.PlayerListener;
 import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -33,10 +32,13 @@ public class WorldControlModule extends BukkitComponent {
     
     private Map<Material, AllowedItem> allowedItems = new HashMap<>();
     private List<BlockLog> logs = new ArrayList<> ();
-    private boolean regenerationRunning = false;
+    private List<BlockLog> savingLogs = new ArrayList<>();
+    private int savingProcessed = 0;
+    private boolean saving = false;
 
     @Override
     public void enable() {
+        INSTANCE = this;
         allowedItems.clear();
         ComponentDatabase.INSTANCE.registerTable(AllowedItemsTable.class, new AllowedItemsTable());
         ComponentDatabase.INSTANCE.registerTable(BlockLogsTable.class, new BlockLogsTable());
@@ -46,9 +48,7 @@ public class WorldControlModule extends BukkitComponent {
         CommandBook.registerEvents(new PlayerListener());
         registerCommands(Commands.class);
         loadAllowedItems();
-        INSTANCE = this;
-        
-        regenerateBlocks();
+        Regeneration.INSTANCE.regenerateBlocks();
         
         CommandBook.inst().getServer().getScheduler().scheduleAsyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {
@@ -71,13 +71,22 @@ public class WorldControlModule extends BukkitComponent {
         if(logs.size() <= 0) {
             return;
         }
+        if(saving) {
+            CommandBook.logger().info("[WC] Saving queue full! Left: " + (savingLogs.size() - savingProcessed));
+            return;
+        }
+        saving = true;
 
-        List<BlockLog> logsCopy = logs;
+        savingLogs = logs;
         logs = new ArrayList<>();
 
-        for(BlockLog log : logsCopy) {
+        for(BlockLog log : savingLogs) {
             ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).addLog(log);
+            savingProcessed++;
         }
+        savingProcessed = 0;
+        savingLogs.clear();
+        saving = false;
     }
 
     public AllowedItem getAllowedItem(Block block) throws NotAllowedItemException {
@@ -85,6 +94,10 @@ public class WorldControlModule extends BukkitComponent {
             return allowedItems.get(block.getType());
         }
         throw new NotAllowedItemException();
+    }
+    
+    public Map<Material, AllowedItem> getAllowedItems() {
+        return allowedItems;
     }
     
     public boolean isNearBlockPlaced(Block block, AllowedItem item) {
@@ -110,48 +123,6 @@ public class WorldControlModule extends BukkitComponent {
             }
         }
         logs.add(log);
-    }
-    
-    public void regenerateBlocks() {
-        regenerateBlocks(false);
-    }
-    
-    public void regenerateBlocks(boolean all) {
-        regenerationRunning = true;
-        //TODO implement
-        if(all) {
-            CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
-                public void run() {
-                    int i = 0;
-                    int informCnt = 1;
-                    for(BlockLog log : ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getAllLogs()) {
-                        regenerateBlockLog(log);
-                        i++;
-                        if(i >= informCnt * 100) {
-                            informCnt++;
-                            CommandBook.logger().info("[WC] " + i + " Blöcke wurden bereits regeneriert.");
-                        }
-                    }
-                    ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).deleteAll();
-                    CommandBook.logger().info("[WC] Regenerierung fertig. Es wurden insgesamt " + i + " Blöcke regeneriert!");
-                    regenerationRunning = false;    
-                }
-            }, 0);
-        }
-        else {
-
-            regenerationRunning = false;
-        }
-    }
-    
-    public void regenerateBlockLog(BlockLog log) {
-        log.getLocation().getBlock().setType(log.getBlockBeforeMaterial());
-        log.getLocation().getBlock().setData((byte)log.getBlockBeforeData(), true);
-    }
-
-    public boolean isRegenerationRunning() {
-
-        return regenerationRunning;
     }
 
     public static class LocalConfiguration extends ConfigurationBase {
