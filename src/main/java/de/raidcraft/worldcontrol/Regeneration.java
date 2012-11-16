@@ -56,10 +56,9 @@ public class Regeneration {
                     }
                     AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItems().get(log.getBlockBeforeMaterial());
 
-                    //TODO random value
-                    int rnd = 0;
+                    double rnd = Math.random() * (WorldControlModule.INSTANCE.config.timeFactor/100);
                     if(regenerateAll || allowedItem == null
-                            || DateUtil.getTimeStamp(log.getTime()) + allowedItem.getRegenerationTime() + rnd < System.currentTimeMillis() / 1000) {
+                            || DateUtil.getTimeStamp(log.getTime()) + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
                         i++;
                     }
@@ -85,12 +84,12 @@ public class Regeneration {
         regenerateBlockLog(allSavedLogs.get(blockLocation));
         allSavedLogs.put(blockLocation, null);
 
-        regenerateRecursive(blockLocation.add(0, 1, 0));
-        regenerateRecursive(blockLocation.add( 0, -1,  0));
+        regenerateRecursive(blockLocation.add( 0,  1,  0));
         regenerateRecursive(blockLocation.add( 1,  0,  0));
-        regenerateRecursive(blockLocation.add(-1,  1,  0));
         regenerateRecursive(blockLocation.add( 0,  0,  1));
+        regenerateRecursive(blockLocation.add(-1,  0,  0));
         regenerateRecursive(blockLocation.add( 0,  0, -1));
+        regenerateRecursive(blockLocation.add( 0, -1,  0));
     }
 
     public void regenerateBlockLog(BlockLog log) {

@@ -128,5 +128,6 @@ public class WorldControlModule extends BukkitComponent {
     public static class LocalConfiguration extends ConfigurationBase {
         @Setting("world") public String world = "world";
         @Setting("farm-region-prefix") public String farmPrefix = "itemfarm_";
+        @Setting("regeneration-max-add-time") public int timeFactor = 50;
     }
 }

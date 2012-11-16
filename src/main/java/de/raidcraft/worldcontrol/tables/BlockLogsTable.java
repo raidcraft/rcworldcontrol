@@ -86,7 +86,7 @@ public class BlockLogsTable extends Table {
         List<BlockLog> blockLogs = new ArrayList<>();
         try {
             ResultSet resultSet = getConnection().prepareStatement(
-                    "SELECT * FROM " + getTableName() + ";").executeQuery();
+                    "SELECT * FROM " + getTableName() + " ORDER BY y").executeQuery();
 
             while (resultSet.next()) {
                 blockLogs.add(new BlockLog(
