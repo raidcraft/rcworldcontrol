@@ -20,6 +20,7 @@ public class BlockLog {
     private Material blockAfterMaterial = Material.AIR;
     private int blockAfterData = 0;
     private String time;
+    private boolean restored;
 
     public BlockLog(String player, Location location, Block blockBefore, Block blockAfter) {
 
@@ -45,12 +46,14 @@ public class BlockLog {
             , short blockBeforeData
             , Material blockAfterMaterial
             , short blockAfterData
-            , String time) {
+            , String time
+            , boolean restored) {
 
         this.id = id;
         this.player = player;
         this.location = location;
         this.time = time;
+        this.restored = restored;
 
         this.blockBeforeMaterial = blockBeforeMaterial;
         this.blockBeforeData = blockBeforeData;
@@ -102,5 +105,10 @@ public class BlockLog {
     public String getTime() {
 
         return time;
+    }
+
+    public boolean isRestored() {
+
+        return restored;
     }
 }

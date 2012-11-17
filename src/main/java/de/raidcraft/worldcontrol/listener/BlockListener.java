@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -37,6 +38,12 @@ public class BlockListener implements Listener {
         //check world
         if(!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
             return;
+
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+            sendInteractSupressWarning(event.getPlayer());
+            event.setCancelled(true);
+            return;
+        }
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
@@ -98,6 +105,12 @@ public class BlockListener implements Listener {
         if(!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
             return;
 
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+            sendInteractSupressWarning(event.getPlayer());
+            event.setCancelled(true);
+            return;
+        }
+
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
         if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
@@ -142,13 +155,18 @@ public class BlockListener implements Listener {
             priority = EventPriority.HIGHEST
     )
     public void onGravelSandMove(BlockPhysicsEvent event) {
-        if(event.getBlock().getType() != Material.SAND && event.getBlock().getType() != Material.GRAVEL) {
-            return;
-        }
-
         //check world
         if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
             return;
+
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if(event.getBlock().getType() != Material.SAND && event.getBlock().getType() != Material.GRAVEL) {
+            return;
+        }
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
@@ -168,6 +186,11 @@ public class BlockListener implements Listener {
         //check world
         if(!event.getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
             return;
+
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+            event.setCancelled(true);
+            return;
+        }
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getLocation());
@@ -190,6 +213,11 @@ public class BlockListener implements Listener {
         if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
             return;
 
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+            event.setCancelled(true);
+            return;
+        }
+
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
         if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
@@ -209,6 +237,11 @@ public class BlockListener implements Listener {
         if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
             return;
 
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+            event.setCancelled(true);
+            return;
+        }
+
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
         if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
@@ -216,5 +249,11 @@ public class BlockListener implements Listener {
         }
 
         LogSaver.INSTANCE.addBlockLog(new BlockLog("Leaves", event.getBlock().getLocation(), event.getBlock(), null));
+    }
+
+    private void sendInteractSupressWarning(Player player) {
+
+        player.sendMessage(ChatColor.RED + "Dieses Gebiet regeneriert sich gerade!");
+        player.sendMessage(ChatColor.RED + "Interaktionen sind für wenige Sekunden unterbunden.");
     }
 }

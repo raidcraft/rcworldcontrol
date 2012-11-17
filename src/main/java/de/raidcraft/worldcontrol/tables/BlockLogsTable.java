@@ -25,7 +25,7 @@ public class BlockLogsTable extends Table {
     
     private String selectNewestQuery = "SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM " +
             "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
-            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z ORDER BY y";
+            "ORDER BY timestamp) AS t1 GROUP BY world, x, y, z";
     
     public BlockLogsTable() {
         super("block_logs", "worldcontrol_");
@@ -47,6 +47,7 @@ public class BlockLogsTable extends Table {
                             "`y` INT( 11 ) NOT NULL, " +
                             "`z` INT( 11 ) NOT NULL, " +
                             "`time` VARCHAR( 100 ) NOT NULL, " +
+                            "`restored` TINYINT( 1 ) DEFAULT 0, " +
                             "PRIMARY KEY ( `id` )" +
                             ")").execute();
         } catch (SQLException e) {
@@ -107,7 +108,8 @@ public class BlockLogsTable extends Table {
                         resultSet.getShort("before_data"),
                         Material.getMaterial(resultSet.getString("after_material")),
                         resultSet.getShort("after_data"),
-                        resultSet.getString("time")
+                        resultSet.getString("time"),
+                        resultSet.getBoolean("restored")
                 ));
             }
         }
@@ -120,7 +122,7 @@ public class BlockLogsTable extends Table {
     public List<BlockLog> getAllLogs() {
         List<BlockLog> blockLogs = new ArrayList<>();
         try {
-            ResultSet resultSet = getConnection().prepareStatement("SELECT * FROM `" + getTableName() + "`").executeQuery();
+            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
 
             while (resultSet.next()) {
                 blockLogs.add(new BlockLog(
@@ -136,7 +138,8 @@ public class BlockLogsTable extends Table {
                         resultSet.getShort("before_data"),
                         Material.getMaterial(resultSet.getString("after_material")),
                         resultSet.getShort("after_data"),
-                        resultSet.getString("time")
+                        resultSet.getString("time"),
+                        resultSet.getBoolean("restored")
                 ));
             }
         }
@@ -187,7 +190,8 @@ public class BlockLogsTable extends Table {
             CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
     }
-    
+
+    // !!!this hardcore query crash the mysql service!!!
 //    public void cleanTable() {
 //        try {
 //            getConnection().prepareStatement(

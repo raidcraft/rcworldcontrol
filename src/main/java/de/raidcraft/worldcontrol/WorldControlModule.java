@@ -31,6 +31,7 @@ public class WorldControlModule extends BukkitComponent {
     public LocalConfiguration config;
     
     private Map<Material, AllowedItem> allowedItems = new HashMap<>();
+    public boolean allowPhysics = true;
 
     @Override
     public void enable() {
@@ -45,7 +46,7 @@ public class WorldControlModule extends BukkitComponent {
         registerCommands(Commands.class);
         loadAllowedItems();
         //TODO ACTIVATE
-        Regeneration.INSTANCE.regenerateBlocks();
+//        Regeneration.INSTANCE.regenerateBlocks();
         
         CommandBook.inst().getServer().getScheduler().scheduleAsyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {

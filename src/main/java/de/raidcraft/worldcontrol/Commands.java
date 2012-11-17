@@ -59,6 +59,7 @@ public class Commands {
         public void regenerate(CommandContext context, CommandSender sender) {
 
             if(context.argsLength() == 0) {
+                sender.sendMessage("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
                 WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
                 Regeneration.INSTANCE.regenerateBlocks();
                 return;
@@ -96,6 +97,27 @@ public class Commands {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Es findet derzeit keine Regenerierung statt!");
                 }
             }
+        }
+
+        @Command(
+                aliases = {"physics", "phy"},
+                desc = "Toggle world physics."
+        )
+        @CommandPermissions("worldcontrol.regenerate")
+        public void physics(CommandContext context, CommandSender sender) {
+            if(context.getString(0).equalsIgnoreCase("on")) {
+                WorldControlModule.INSTANCE.allowPhysics = true;
+                sender.sendMessage(ChatColor.DARK_GREEN + "Blockphysik eingeschaltet!");
+                return;
+            }
+
+            if(context.getString(0).equalsIgnoreCase("off")) {
+                WorldControlModule.INSTANCE.allowPhysics = false;
+                sender.sendMessage(ChatColor.DARK_GREEN + "Blockphysik ausgeschaltet!");
+                return;
+            }
+
+            sender.sendMessage(ChatColor.DARK_RED + "Als Parameter entweder 'on' oder 'off'!");
         }
     }
 }

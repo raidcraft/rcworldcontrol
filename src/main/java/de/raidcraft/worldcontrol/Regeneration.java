@@ -24,7 +24,6 @@ public class Regeneration {
     private boolean regenerationRunning = false;
     private boolean regenerateAll = false;
     private int restored = 0;
-    private int informCnt = 0;
     private Map<Location, BlockLog> allSavedLogs = new HashMap<>();
     private List<BlockLog> blocksToRestore = new ArrayList<>();
     private int restoreTaskId = 0;
@@ -32,15 +31,26 @@ public class Regeneration {
     public void startRestoreTask() {
         restoreTaskId = CommandBook.inst().getServer().getScheduler().scheduleSyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {
+                if(blocksToRestore.size() == 0) {
+                    WCLogger.info("No blocks to regenerate!");
+                    stopRestoreTask();
+                    return;
+                }
 
                 WCLogger.info("Regenerate " + blocksToRestore.size() + " blocks...");
                 LogSaver.INSTANCE.setBlocked(true);
                 for (BlockLog log : blocksToRestore) {
                     regenerateBlockLog(log);
                 }
-                LogSaver.INSTANCE.setBlocked(false);
+                // activate physics and logs after 5 seconds
+                CommandBook.inst().getServer().getScheduler().scheduleSyncDelayedTask(CommandBook.inst(), new Runnable() {
+                    public void run() {
+
+                        LogSaver.INSTANCE.setBlocked(false);
+                    }
+                }, 5 * 20);
                 WCLogger.info("Regeneration finished!");
-                WCLogger.info("Start database cleanup...");
+                WCLogger.info("Start database update...");
 
                 CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
                     public void run() {
@@ -48,21 +58,24 @@ public class Regeneration {
                         final Connection connection = ComponentDatabase.INSTANCE.getNewConnection();
                         PreparedStatement statement = null;
 
-                        String deleteQuery = "DELETE FROM " + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() +
-                                " WHERE id = ?";
+                        String updateQuery = "DELETE FROM `" + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() +
+                                "` WHERE world = ? AND x = ? AND y = ? AND z = ?";
 
                         try {
                             connection.setAutoCommit(false);
-                            statement = connection.prepareStatement(deleteQuery);
+                            statement = connection.prepareStatement(updateQuery);
 
-                            int i = 0;
+                            int i = 1;
                             WCLogger.info("Try to delete " + blocksToRestore.size() + " rows...");
                             for (BlockLog log : blocksToRestore) {
-                                statement.setInt(1, log.getId());
+                                statement.setString(1, log.getLocation().getWorld().getName());
+                                statement.setInt(2, log.getLocation().getBlockX());
+                                statement.setInt(3, log.getLocation().getBlockY());
+                                statement.setInt(4, log.getLocation().getBlockZ());
                                 statement.executeUpdate();
                                 i++;
 
-                                if(i + 1 % 100 == 0) {
+                                if(i % 100 == 0) {
                                     WCLogger.info("Already deleted " + i + " rows!");
                                     connection.commit();
                                 }
@@ -87,7 +100,7 @@ public class Regeneration {
                     }
                 }, 0);
 
-                CommandBook.inst().getServer().getScheduler().cancelTask(restoreTaskId);
+                stopRestoreTask();
             }
         }, 0, 10*20);
     }
@@ -117,7 +130,6 @@ public class Regeneration {
             public void run() {
                 
                 restored = 0;
-                informCnt = 1;
 
                 List<BlockLog> allLogs = ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getAllLogs();
                 for(BlockLog log : allLogs) {
@@ -148,7 +160,8 @@ public class Regeneration {
     }
 
     private void regenerateRecursive(Location blockLocation) {
-        if(!allSavedLogs.containsKey(blockLocation) || allSavedLogs.get(blockLocation) == null) {
+        if(!allSavedLogs.containsKey(blockLocation)
+                || allSavedLogs.get(blockLocation) == null) {
             return;
         }
         restored++;

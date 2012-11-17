@@ -27,7 +27,7 @@ public class LogSaver {
     private boolean blocked = false;
 
     public void addBlockLog(BlockLog log) {
-        if(blocked) {
+        if(isBlocked()) {
             return;
         }
         for(BlockLog currLog : logs) {
@@ -57,8 +57,8 @@ public class LogSaver {
         PreparedStatement statement = null;
         
         String insertQuery = "INSERT INTO " + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() + 
-                " (player, before_material, before_data, after_material, after_data, world, x, y, z, time) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                " (player, before_material, before_data, after_material, after_data, world, x, y, z, time, restored) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
 
         try {
             connection.setAutoCommit(false);
@@ -78,7 +78,7 @@ public class LogSaver {
                 statement.executeUpdate();
                 savingProcessed++;
 
-                if(savingProcessed + 1 % 1000 == 0) {
+                if((savingProcessed + 1) % 1000 == 0) {
                     connection.commit();
                 }
             }
@@ -113,5 +113,9 @@ public class LogSaver {
 
     public void setBlocked(boolean state) {
         blocked = state;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
     }
 }
