@@ -31,10 +31,6 @@ public class WorldControlModule extends BukkitComponent {
     public LocalConfiguration config;
     
     private Map<Material, AllowedItem> allowedItems = new HashMap<>();
-    private List<BlockLog> logs = new ArrayList<> ();
-    private List<BlockLog> savingLogs = new ArrayList<>();
-    private int savingProcessed = 0;
-    private boolean saving = false;
 
     @Override
     public void enable() {
@@ -48,14 +44,23 @@ public class WorldControlModule extends BukkitComponent {
         CommandBook.registerEvents(new PlayerListener());
         registerCommands(Commands.class);
         loadAllowedItems();
-        Regeneration.INSTANCE.regenerateBlocks();
+        //TODO ACTIVATE
+//        Regeneration.INSTANCE.regenerateBlocks();
         
         CommandBook.inst().getServer().getScheduler().scheduleAsyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {
-                saveLogs();
+                LogSaver.INSTANCE.save();
             }
         }, 5 * 20, 10 * 20);
     }
+
+    @Override
+    public void disable() {
+        CommandBook.logger().info("[WC] Saving block changes...");
+        LogSaver.INSTANCE.save();
+        super.disable();
+    }
+
 
     public void loadConfig() {
         config = configure(new LocalConfiguration());
@@ -67,27 +72,7 @@ public class WorldControlModule extends BukkitComponent {
         }
     }
 
-    private void saveLogs() {
-        if(logs.size() <= 0) {
-            return;
-        }
-        if(saving) {
-            CommandBook.logger().info("[WC] Saving queue full! Left: " + (savingLogs.size() - savingProcessed));
-            return;
-        }
-        saving = true;
 
-        savingLogs = logs;
-        logs = new ArrayList<>();
-
-        for(BlockLog log : savingLogs) {
-            ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).addLog(log);
-            savingProcessed++;
-        }
-        savingProcessed = 0;
-        savingLogs.clear();
-        saving = false;
-    }
 
     public AllowedItem getAllowedItem(Block block) throws NotAllowedItemException {
         if(allowedItems.containsKey(block.getType())) {
@@ -101,7 +86,7 @@ public class WorldControlModule extends BukkitComponent {
     }
     
     public boolean isNearBlockPlaced(Block block, AllowedItem item) {
-        for(BlockLog log : logs) {
+        for(BlockLog log : LogSaver.INSTANCE.getLogs()) {
             if(log.getBlockAfterMaterial() == item.getMaterial()) {
                 if(log.getLocation().distance(block.getLocation()) < item.getLocalPlaceDistance()) {
                     return true;
@@ -112,17 +97,6 @@ public class WorldControlModule extends BukkitComponent {
             return true;
         }
         return false;
-    }
-
-    public void addBlockLog(BlockLog log) {
-        for(BlockLog currLog : logs) {
-            if(log.getLocation().getBlockX() == currLog.getLocation().getBlockX()
-                    && log.getLocation().getBlockY() == currLog.getLocation().getBlockY()
-                    && log.getLocation().getBlockZ() == currLog.getLocation().getBlockZ()) {
-                return;
-            }
-        }
-        logs.add(log);
     }
 
     public static class LocalConfiguration extends ConfigurationBase {

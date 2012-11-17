@@ -20,7 +20,11 @@ import java.util.List;
  * Description:
  */
 public class BlockLogsTable extends Table {
-
+    
+    private String selectNewestQuery = "SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM " +
+            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
+            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z ORDER BY y";
+    
     public BlockLogsTable() {
         super("block_logs", "worldcontrol_");
     }
@@ -44,7 +48,7 @@ public class BlockLogsTable extends Table {
                             "PRIMARY KEY ( `id` )" +
                             ")").execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning(e.getMessage());
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
@@ -78,15 +82,14 @@ public class BlockLogsTable extends Table {
                             ")"
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning(e.getMessage());
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
     public List<BlockLog> getAllLogs() {
         List<BlockLog> blockLogs = new ArrayList<>();
         try {
-            ResultSet resultSet = getConnection().prepareStatement(
-                    "SELECT * FROM " + getTableName() + " ORDER BY y").executeQuery();
+            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
 
             while (resultSet.next()) {
                 blockLogs.add(new BlockLog(
@@ -105,8 +108,10 @@ public class BlockLogsTable extends Table {
                         resultSet.getString("time")
                 ));
             }
+            cleanTable();
         }
         catch (SQLException e) {
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
         return blockLogs;
     }
@@ -128,6 +133,7 @@ public class BlockLogsTable extends Table {
             }
         }
         catch (SQLException e) {
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
         return false;
     }
@@ -138,7 +144,7 @@ public class BlockLogsTable extends Table {
                     "DELETE FROM " + getTableName() + " WHERE id =  '" + id + "'"
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning(e.getMessage());
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
@@ -148,7 +154,18 @@ public class BlockLogsTable extends Table {
                     "DELETE FROM " + getTableName()
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning(e.getMessage());
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+        }
+    }
+    
+    public void cleanTable() {
+        try {
+            getConnection().prepareStatement(
+                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +
+                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
+                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
+        } catch (SQLException e) {
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 }

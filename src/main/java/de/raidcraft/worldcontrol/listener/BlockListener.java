@@ -1,10 +1,7 @@
 package de.raidcraft.worldcontrol.listener;
 
 import com.silthus.raidcraft.util.component.database.ComponentDatabase;
-import de.raidcraft.worldcontrol.AllowedItem;
-import de.raidcraft.worldcontrol.BlockLog;
-import de.raidcraft.worldcontrol.WorldControlModule;
-import de.raidcraft.worldcontrol.WorldGuardManager;
+import de.raidcraft.worldcontrol.*;
 import de.raidcraft.worldcontrol.exceptions.*;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Bukkit;
@@ -70,7 +67,7 @@ public class BlockListener implements Listener {
                 throw new LocalPlaceLimitReachedException();
             }
 
-            WorldControlModule.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
+            LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
             return;
         }
         catch (NotAllowedItemException e) {
@@ -120,7 +117,7 @@ public class BlockListener implements Listener {
                 throw new FarmOnlyException();
             }
 
-            WorldControlModule.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
+            LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
             if(!allowedItem.canDropItem()) {
                 event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
                 throw new NoItemDropException();
@@ -149,12 +146,17 @@ public class BlockListener implements Listener {
             return;
         }
 
+        //check world
+        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+            return;
+
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if(region == null || !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
             return;
         }
-        WorldControlModule.INSTANCE.addBlockLog(new BlockLog("PHYSIC", event.getBlock().getLocation(), event.getBlock(), null));
+
+        LogSaver.INSTANCE.addBlockLog(new BlockLog("PHYSIC", event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     @EventHandler(
@@ -163,6 +165,10 @@ public class BlockListener implements Listener {
     )
     public void onExplosion(EntityExplodeEvent event) {
 
+        //check world
+        if(!event.getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+            return;
+
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getLocation());
         if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
@@ -170,7 +176,7 @@ public class BlockListener implements Listener {
         }
 
         for(Block block : event.blockList()) {
-            WorldControlModule.INSTANCE.addBlockLog(new BlockLog("EXPLOSION", block.getLocation(), block, null));
+            LogSaver.INSTANCE.addBlockLog(new BlockLog("EXPLOSION", block.getLocation(), block, null));
         }
     }
 
@@ -180,13 +186,17 @@ public class BlockListener implements Listener {
     )
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
 
+        //check world
+        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+            return;
+
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
         if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
             return;
         }
 
-        WorldControlModule.INSTANCE.addBlockLog(new BlockLog("ENTITY", event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INSTANCE.addBlockLog(new BlockLog("ENTITY", event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     @EventHandler(
@@ -195,12 +205,16 @@ public class BlockListener implements Listener {
     )
     public void onBlockDecay(LeavesDecayEvent event) {
 
+        //check world
+        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+            return;
+
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
         if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
             return;
         }
 
-        WorldControlModule.INSTANCE.addBlockLog(new BlockLog("LEAVES", event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INSTANCE.addBlockLog(new BlockLog("LEAVES", event.getBlock().getLocation(), event.getBlock(), null));
     }
 }
