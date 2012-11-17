@@ -156,7 +156,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INSTANCE.addBlockLog(new BlockLog("PHYSIC", event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INSTANCE.addBlockLog(new BlockLog("Physics", event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     @EventHandler(
@@ -176,7 +176,7 @@ public class BlockListener implements Listener {
         }
 
         for(Block block : event.blockList()) {
-            LogSaver.INSTANCE.addBlockLog(new BlockLog("EXPLOSION", block.getLocation(), block, null));
+            LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getEntityType().getName(), block.getLocation(), block, null));
         }
     }
 
@@ -196,7 +196,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INSTANCE.addBlockLog(new BlockLog("ENTITY", event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getEntity().getType().getName(), event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     @EventHandler(
@@ -215,6 +215,6 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INSTANCE.addBlockLog(new BlockLog("LEAVES", event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INSTANCE.addBlockLog(new BlockLog("Leaves", event.getBlock().getLocation(), event.getBlock(), null));
     }
 }

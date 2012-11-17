@@ -12,7 +12,9 @@ import org.bukkit.block.Block;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Philip
@@ -86,7 +88,7 @@ public class BlockLogsTable extends Table {
         }
     }
 
-    public List<BlockLog> getAllLogs() {
+    public List<BlockLog> getAllOldestLogs() {
         List<BlockLog> blockLogs = new ArrayList<>();
         try {
             ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
@@ -108,7 +110,35 @@ public class BlockLogsTable extends Table {
                         resultSet.getString("time")
                 ));
             }
-            cleanTable();
+        }
+        catch (SQLException e) {
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+        }
+        return blockLogs;
+    }
+
+    public List<BlockLog> getAllLogs() {
+        List<BlockLog> blockLogs = new ArrayList<>();
+        try {
+            ResultSet resultSet = getConnection().prepareStatement("SELECT * FROM `" + getTableName() + "`").executeQuery();
+
+            while (resultSet.next()) {
+                blockLogs.add(new BlockLog(
+                        resultSet.getInt("id"),
+                        resultSet.getString("player"),
+                        new Location(
+                                Bukkit.getWorld(resultSet.getString("world")),
+                                resultSet.getDouble("x"),
+                                resultSet.getDouble("y"),
+                                resultSet.getDouble("z")
+                        ),
+                        Material.getMaterial(resultSet.getString("before_material")),
+                        resultSet.getShort("before_data"),
+                        Material.getMaterial(resultSet.getString("after_material")),
+                        resultSet.getShort("after_data"),
+                        resultSet.getString("time")
+                ));
+            }
         }
         catch (SQLException e) {
             CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
@@ -158,14 +188,14 @@ public class BlockLogsTable extends Table {
         }
     }
     
-    public void cleanTable() {
-        try {
-            getConnection().prepareStatement(
-                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +
-                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
-                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
-        } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
-        }
-    }
+//    public void cleanTable() {
+//        try {
+//            getConnection().prepareStatement(
+//                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +
+//                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
+//                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
+//        } catch (SQLException e) {
+//            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+//        }
+//    }
 }

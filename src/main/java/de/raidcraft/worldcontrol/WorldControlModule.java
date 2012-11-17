@@ -45,7 +45,7 @@ public class WorldControlModule extends BukkitComponent {
         registerCommands(Commands.class);
         loadAllowedItems();
         //TODO ACTIVATE
-//        Regeneration.INSTANCE.regenerateBlocks();
+        Regeneration.INSTANCE.regenerateBlocks();
         
         CommandBook.inst().getServer().getScheduler().scheduleAsyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {

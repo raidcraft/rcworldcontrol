@@ -4,6 +4,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
+import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -58,7 +59,7 @@ public class Commands {
         public void regenerate(CommandContext context, CommandSender sender) {
 
             if(context.argsLength() == 0) {
-                sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Laggs möglich)");
+                WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
                 Regeneration.INSTANCE.regenerateBlocks();
                 return;
             }

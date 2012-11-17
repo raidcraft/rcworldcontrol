@@ -4,7 +4,9 @@ import com.silthus.raidcraft.util.component.DateUtil;
 import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import com.sk89q.commandbook.CommandBook;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
+import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,16 +33,17 @@ public class Regeneration {
         restoreTaskId = CommandBook.inst().getServer().getScheduler().scheduleSyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {
 
-                CommandBook.logger().info("[WC] Regenerate " + blocksToRestore.size() + " blocks...");
+                WCLogger.info("Regenerate " + blocksToRestore.size() + " blocks...");
+                LogSaver.INSTANCE.setBlocked(true);
                 for (BlockLog log : blocksToRestore) {
                     regenerateBlockLog(log);
                 }
-                CommandBook.logger().info("[WC] Regeneration finished!");
-                CommandBook.logger().info("[WC] Start database cleanup...");
+                LogSaver.INSTANCE.setBlocked(false);
+                WCLogger.info("Regeneration finished!");
+                WCLogger.info("Start database cleanup...");
 
                 CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
                     public void run() {
-                        ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).cleanTable();
 
                         final Connection connection = ComponentDatabase.INSTANCE.getNewConnection();
                         PreparedStatement statement = null;
@@ -53,12 +56,14 @@ public class Regeneration {
                             statement = connection.prepareStatement(deleteQuery);
 
                             int i = 0;
+                            WCLogger.info("Try to delete " + blocksToRestore.size() + " rows...");
                             for (BlockLog log : blocksToRestore) {
                                 statement.setInt(1, log.getId());
                                 statement.executeUpdate();
                                 i++;
 
-                                if(i + 1 % 1000 == 0) {
+                                if(i + 1 % 100 == 0) {
+                                    WCLogger.info("Already deleted " + i + " rows!");
                                     connection.commit();
                                 }
                             }
@@ -75,7 +80,7 @@ public class Regeneration {
                             } catch (final SQLException ex) {
                                 CommandBook.logger().warning("[WC] SQL exception on close: " + ex.getMessage());
                             }
-                            CommandBook.logger().info("[WC] Finished database cleanup!");
+                            WCLogger.info("Finished database cleanup!");
                             blocksToRestore.clear();
                         }
 
@@ -106,7 +111,7 @@ public class Regeneration {
         regenerationRunning = true;
         allSavedLogs.clear();
         stopRestoreTask();
-        CommandBook.logger().info("[WC] Collect blocks for regeneration...");
+        WCLogger.info("Collect blocks for regeneration...");
 
         CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
             public void run() {
@@ -114,7 +119,8 @@ public class Regeneration {
                 restored = 0;
                 informCnt = 1;
 
-                for(BlockLog log : ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getAllLogs()) {
+                List<BlockLog> allLogs = ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getAllLogs();
+                for(BlockLog log : allLogs) {
                     allSavedLogs.put(log.getLocation(), log);
                 }
 
@@ -130,12 +136,11 @@ public class Regeneration {
                     if(regenerateAll || allowedItem == null
                             || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
-                        restored++;
                     }
                 }
                 
                 startRestoreTask();
-                CommandBook.logger().info("[WC] " + restored + " found for regeneration!");
+                WCLogger.info(restored + " found for regeneration!");
                 regenerationRunning = false;
                 regenerateAll = false;
             }
@@ -166,7 +171,14 @@ public class Regeneration {
 
     public void regenerateBlockLog(BlockLog log) {
         log.getLocation().getBlock().setType(log.getBlockBeforeMaterial());
-        log.getLocation().getBlock().setData((byte)log.getBlockBeforeData(), true);
+
+        byte dataByte = (byte)log.getBlockBeforeData();
+
+        // make leaves permanent
+//        if(log.getBlockAfterMaterial() == Material.LEAVES) {
+//            dataByte = 1<<4;
+//        }
+        log.getLocation().getBlock().setData(dataByte, true);
     }
 
     public boolean canRegenerate() {

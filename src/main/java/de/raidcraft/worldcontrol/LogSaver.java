@@ -3,6 +3,7 @@ package de.raidcraft.worldcontrol;
 import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import com.sk89q.commandbook.CommandBook;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
+import de.raidcraft.worldcontrol.util.WCLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,8 +24,12 @@ public class LogSaver {
     private List<BlockLog> savingLogs = new ArrayList<>();
     private int savingProcessed = 0;
     private boolean saving = false;
+    private boolean blocked = false;
 
     public void addBlockLog(BlockLog log) {
+        if(blocked) {
+            return;
+        }
         for(BlockLog currLog : logs) {
             if(log.getLocation().getBlockX() == currLog.getLocation().getBlockX()
                     && log.getLocation().getBlockY() == currLog.getLocation().getBlockY()
@@ -40,7 +45,7 @@ public class LogSaver {
             return;
         }
         if(saving) {
-            CommandBook.logger().info("[WC] Saving queue full! Left: " + (savingLogs.size() - savingProcessed));
+            CommandBook.logger().info("[WC] Saving queue blocked! Left: " + (savingLogs.size() - savingProcessed));
             return;
         }
         saving = true;
@@ -58,7 +63,6 @@ public class LogSaver {
         try {
             connection.setAutoCommit(false);
             statement = connection.prepareStatement(insertQuery);
-            
             for(BlockLog log : savingLogs) {
 
                 statement.setString(1, log.getPlayer());
@@ -90,6 +94,7 @@ public class LogSaver {
             } catch (final SQLException ex) {
                 CommandBook.logger().warning("[WC] SQL exception on close: " + ex.getMessage());
             }
+            WCLogger.info("Saved " + savingLogs.size() + " logs!");
             savingProcessed = 0;
             savingLogs.clear();
             saving = false;
@@ -104,5 +109,9 @@ public class LogSaver {
     public boolean isSaving() {
 
         return saving;
+    }
+
+    public void setBlocked(boolean state) {
+        blocked = state;
     }
 }
