@@ -17,11 +17,11 @@ public class WCLogger {
     
     public static void info(String msg) {
         CommandBook.logger().info(ChatColor.stripColor(PREFIX + msg));
-        for(Player player : Bukkit.getOnlinePlayers()) {
-            if(player.hasPermission("worldcontrol.infos")) {
-                player.sendMessage(PREFIX + ChatColor.YELLOW + msg);
-            }
-        }
+//        for(Player player : Bukkit.getOnlinePlayers()) {
+//            if(player.hasPermission("worldcontrol.infos")) {
+//                player.sendMessage(PREFIX + ChatColor.YELLOW + msg);
+//            }
+//        }
     }
 
 }

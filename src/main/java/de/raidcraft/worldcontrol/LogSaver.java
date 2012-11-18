@@ -94,7 +94,7 @@ public class LogSaver {
             } catch (final SQLException ex) {
                 CommandBook.logger().warning("[WC] SQL exception on close: " + ex.getMessage());
             }
-            WCLogger.info("Saved " + savingLogs.size() + " logs!");
+//            WCLogger.info("Saved " + savingLogs.size() + " logs!");
             savingProcessed = 0;
             savingLogs.clear();
             saving = false;

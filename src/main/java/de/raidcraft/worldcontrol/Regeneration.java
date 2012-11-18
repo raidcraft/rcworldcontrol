@@ -50,7 +50,7 @@ public class Regeneration {
                     }
                 }, 5 * 20);
                 WCLogger.info("Regeneration finished!");
-                WCLogger.info("Start database update...");
+                WCLogger.info("Start database cleanup...");
 
                 CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
                     public void run() {
@@ -66,14 +66,14 @@ public class Regeneration {
                             statement = connection.prepareStatement(updateQuery);
 
                             int i = 1;
-                            WCLogger.info("Try to delete " + blocksToRestore.size() + " rows...");
+//                            WCLogger.info("Try to delete " + blocksToRestore.size() + " rows...");
                             for (BlockLog log : blocksToRestore) {
                                 statement.setInt(1, log.getId());
                                 statement.executeUpdate();
                                 i++;
 
                                 if(i % 100 == 0) {
-                                    WCLogger.info("Already deleted " + i + " rows!");
+//                                    WCLogger.info("Already deleted " + i + " rows!");
                                     connection.commit();
                                 }
                             }
@@ -122,9 +122,9 @@ public class Regeneration {
         allSavedLogs.clear();
         stopRestoreTask();
 
-        WCLogger.info("Clean log table...");
+//        WCLogger.info("Clean log table...");
         ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).cleanTable();
-        WCLogger.info("Finished table cleanup!");
+//        WCLogger.info("Finished table cleanup!");
 
         WCLogger.info("Collect blocks for regeneration...");
 
@@ -154,7 +154,7 @@ public class Regeneration {
                 }
                 
                 startRestoreTask();
-                WCLogger.info(restored + " found for regeneration!");
+                WCLogger.info(restored + " blocks found!");
                 regenerationRunning = false;
                 regenerateAll = false;
             }

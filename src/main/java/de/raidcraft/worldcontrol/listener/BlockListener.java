@@ -1,23 +1,18 @@
 package de.raidcraft.worldcontrol.listener;
 
-import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import de.raidcraft.worldcontrol.*;
 import de.raidcraft.worldcontrol.exceptions.*;
-import de.raidcraft.worldcontrol.tables.BlockLogsTable;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
 
 /**
  * Author: Philip
@@ -40,7 +35,7 @@ public class BlockListener implements Listener {
             return;
 
         if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
-            sendInteractSupressWarning(event.getPlayer());
+            sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
             return;
         }
@@ -106,7 +101,7 @@ public class BlockListener implements Listener {
             return;
 
         if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
-            sendInteractSupressWarning(event.getPlayer());
+            sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
             return;
         }
@@ -251,7 +246,7 @@ public class BlockListener implements Listener {
         LogSaver.INSTANCE.addBlockLog(new BlockLog("Leaves", event.getBlock().getLocation(), event.getBlock(), null));
     }
 
-    private void sendInteractSupressWarning(Player player) {
+    private void sendInteractSuppressWarning(Player player) {
 
         player.sendMessage(ChatColor.RED + "Dieses Gebiet regeneriert sich gerade!");
         player.sendMessage(ChatColor.RED + "Interaktionen sind für wenige Sekunden unterbunden.");
