@@ -59,7 +59,7 @@ public class Commands {
         public void regenerate(CommandContext context, CommandSender sender) {
 
             if(context.argsLength() == 0) {
-                sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
+                sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wurde gestartet! " + ChatColor.DARK_RED + "(Lags möglich)");
                 WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
                 Regeneration.INSTANCE.regenerateBlocks();
                 return;
