@@ -26,7 +26,7 @@ public class Commands {
             desc = "Manage world control module."
     )
     @NestedCommand(NestedCommands.class)
-    public void hungerGames(CommandContext context, CommandSender sender) {
+    public void worldControl(CommandContext context, CommandSender sender) {
         //TODO implement help
     }
 

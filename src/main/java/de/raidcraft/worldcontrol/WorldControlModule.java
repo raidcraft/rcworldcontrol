@@ -2,7 +2,9 @@ package de.raidcraft.worldcontrol;
 
 import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import com.sk89q.commandbook.CommandBook;
+import com.sk89q.worldedit.LocalConfiguration;
 import com.zachsthings.libcomponents.ComponentInformation;
+import com.zachsthings.libcomponents.Depend;
 import com.zachsthings.libcomponents.bukkit.BukkitComponent;
 import com.zachsthings.libcomponents.config.ConfigurationBase;
 import com.zachsthings.libcomponents.config.Setting;
@@ -25,34 +27,46 @@ import java.util.*;
         friendlyName = "World Control",
         desc = "Check block actions and regenerates the world"
 )
+@Depend( plugins = { "RaidCraftCore"})
 public class WorldControlModule extends BukkitComponent {
     public static WorldControlModule INSTANCE; // not so sweet solution
 
     public LocalConfiguration config;
     
     private Map<Material, AllowedItem> allowedItems = new HashMap<>();
+    private int reloadTaskId;
     public boolean allowPhysics = true;
 
     @Override
     public void enable() {
         INSTANCE = this;
-        allowedItems.clear();
-        ComponentDatabase.INSTANCE.registerTable(AllowedItemsTable.class, new AllowedItemsTable());
-        ComponentDatabase.INSTANCE.registerTable(BlockLogsTable.class, new BlockLogsTable());
-
-        loadConfig();
-        CommandBook.registerEvents(new BlockListener());
-        CommandBook.registerEvents(new PlayerListener());
-        registerCommands(Commands.class);
-        loadAllowedItems();
-        //TODO ACTIVATE
-//        Regeneration.INSTANCE.regenerateBlocks();
-        
-        CommandBook.inst().getServer().getScheduler().scheduleAsyncRepeatingTask(CommandBook.inst(), new Runnable() {
+        reloadTaskId = CommandBook.inst().getServer().getScheduler().scheduleSyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {
-                LogSaver.INSTANCE.save();
+                if(ComponentDatabase.INSTANCE.getConnection() != null) {
+                    allowedItems.clear();
+                    ComponentDatabase.INSTANCE.registerTable(AllowedItemsTable.class, new AllowedItemsTable());
+                    ComponentDatabase.INSTANCE.registerTable(BlockLogsTable.class, new BlockLogsTable());
+
+                    loadConfig();
+                    CommandBook.registerEvents(new BlockListener());
+                    CommandBook.registerEvents(new PlayerListener());
+                    registerCommands(Commands.class);
+                    loadAllowedItems();
+                    //TODO ACTIVATE
+//                  Regeneration.INSTANCE.regenerateBlocks();
+
+                    CommandBook.inst().getServer().getScheduler().scheduleAsyncRepeatingTask(CommandBook.inst(), new Runnable() {
+                        public void run() {
+                            LogSaver.INSTANCE.save();
+                        }
+                    }, 5 * 20, 10 * 20);
+
+                    CommandBook.logger().info("[WC] Found DB connection, init worldcontrol module...");
+                    CommandBook.server().getScheduler().cancelTask(reloadTaskId);
+                }
             }
-        }, 5 * 20, 10 * 20);
+        }, 0, 2*20);
+
     }
 
     @Override
