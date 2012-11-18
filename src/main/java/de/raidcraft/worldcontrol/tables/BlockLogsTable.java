@@ -4,6 +4,8 @@ import com.silthus.raidcraft.util.component.database.Table;
 import com.sk89q.commandbook.CommandBook;
 import de.raidcraft.worldcontrol.AllowedItem;
 import de.raidcraft.worldcontrol.BlockLog;
+import de.raidcraft.worldcontrol.LogSaver;
+import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,7 +25,7 @@ import java.util.Map;
  */
 public class BlockLogsTable extends Table {
     
-    private String selectNewestQuery = "SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM " +
+    private String selectNewestQuery = "SELECT id, player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM " +
             "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
             "ORDER BY timestamp) AS t1 GROUP BY world, x, y, z";
     
@@ -47,7 +49,6 @@ public class BlockLogsTable extends Table {
                             "`y` INT( 11 ) NOT NULL, " +
                             "`z` INT( 11 ) NOT NULL, " +
                             "`time` VARCHAR( 100 ) NOT NULL, " +
-                            "`restored` TINYINT( 1 ) DEFAULT 0, " +
                             "PRIMARY KEY ( `id` )" +
                             ")").execute();
         } catch (SQLException e) {
@@ -108,8 +109,7 @@ public class BlockLogsTable extends Table {
                         resultSet.getShort("before_data"),
                         Material.getMaterial(resultSet.getString("after_material")),
                         resultSet.getShort("after_data"),
-                        resultSet.getString("time"),
-                        resultSet.getBoolean("restored")
+                        resultSet.getString("time")
                 ));
             }
         }
@@ -138,8 +138,7 @@ public class BlockLogsTable extends Table {
                         resultSet.getShort("before_data"),
                         Material.getMaterial(resultSet.getString("after_material")),
                         resultSet.getShort("after_data"),
-                        resultSet.getString("time"),
-                        resultSet.getBoolean("restored")
+                        resultSet.getString("time")
                 ));
             }
         }
@@ -189,6 +188,23 @@ public class BlockLogsTable extends Table {
         } catch (SQLException e) {
             CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
         }
+    }
+
+    public void cleanTable() {
+
+        LogSaver.INSTANCE.setBlocked(true);
+
+        try {
+            getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `" + getTableName() + "_temp` LIKE " + getTableName()).execute();
+            getConnection().prepareStatement("INSERT INTO `" + getTableName() + "_temp` " + selectNewestQuery).execute();
+            getConnection().prepareStatement("TRUNCATE TABLE `" + getTableName() + "`").execute();
+            getConnection().prepareStatement("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`").execute();
+            getConnection().prepareStatement("DROP TABLE `" + getTableName() + "_temp`").execute();
+        } catch (SQLException e) {
+            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+        }
+
+        LogSaver.INSTANCE.setBlocked(false);
     }
 
     // !!!this hardcore query crash the mysql service!!!

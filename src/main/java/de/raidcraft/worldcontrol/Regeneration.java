@@ -59,7 +59,7 @@ public class Regeneration {
                         PreparedStatement statement = null;
 
                         String updateQuery = "DELETE FROM `" + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() +
-                                "` WHERE world = ? AND x = ? AND y = ? AND z = ?";
+                                "` WHERE id = ?";
 
                         try {
                             connection.setAutoCommit(false);
@@ -68,10 +68,7 @@ public class Regeneration {
                             int i = 1;
                             WCLogger.info("Try to delete " + blocksToRestore.size() + " rows...");
                             for (BlockLog log : blocksToRestore) {
-                                statement.setString(1, log.getLocation().getWorld().getName());
-                                statement.setInt(2, log.getLocation().getBlockX());
-                                statement.setInt(3, log.getLocation().getBlockY());
-                                statement.setInt(4, log.getLocation().getBlockZ());
+                                statement.setInt(1, log.getId());
                                 statement.executeUpdate();
                                 i++;
 
@@ -124,6 +121,11 @@ public class Regeneration {
         regenerationRunning = true;
         allSavedLogs.clear();
         stopRestoreTask();
+
+        WCLogger.info("Clean log table...");
+        ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).cleanTable();
+        WCLogger.info("Finished table cleanup!");
+
         WCLogger.info("Collect blocks for regeneration...");
 
         CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
@@ -196,6 +198,6 @@ public class Regeneration {
 
     public boolean canRegenerate() {
 
-        return !regenerationRunning || blocksToRestore.size() == 0;
+        return !regenerationRunning && blocksToRestore.size() == 0;
     }
 }

@@ -57,8 +57,8 @@ public class LogSaver {
         PreparedStatement statement = null;
         
         String insertQuery = "INSERT INTO " + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() + 
-                " (player, before_material, before_data, after_material, after_data, world, x, y, z, time, restored) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+                " (player, before_material, before_data, after_material, after_data, world, x, y, z, time) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             connection.setAutoCommit(false);
