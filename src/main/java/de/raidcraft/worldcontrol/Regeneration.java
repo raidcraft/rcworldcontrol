@@ -6,12 +6,14 @@ import com.sk89q.commandbook.CommandBook;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Location;
-import org.bukkit.Material;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Philip
@@ -147,8 +149,7 @@ public class Regeneration {
                     AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItems().get(log.getBlockBeforeMaterial());
 
                     double rnd = Math.random() * (WorldControlModule.INSTANCE.config.timeFactor/100);
-                    if(regenerateAll || allowedItem == null
-                            || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
+                    if(regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
                     }
                 }
