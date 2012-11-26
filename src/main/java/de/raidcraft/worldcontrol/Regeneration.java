@@ -147,7 +147,9 @@ public class Regeneration {
                         continue;
                     }
                     AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItems().get(log.getBlockBeforeMaterial());
-
+                    if(allowedItem == null) {
+                        continue;
+                    }
                     double rnd = Math.random() * (WorldControlModule.INSTANCE.config.timeFactor/100);
                     if(regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
