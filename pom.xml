@@ -43,6 +43,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.4.6-R0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>de.raidcraft</groupId>
             <artifactId>RaidCraftCore</artifactId>
             <version>1.7-SNAPSHOT</version>
