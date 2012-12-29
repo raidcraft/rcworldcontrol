@@ -1,5 +1,7 @@
 package de.raidcraft.worldcontrol.listener;
 
+import de.raidcraft.RaidCraft;
+import de.raidcraft.util.MetaDataKey;
 import de.raidcraft.worldcontrol.*;
 import de.raidcraft.worldcontrol.exceptions.*;
 import org.bukkit.ChatColor;
@@ -10,7 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
@@ -27,6 +32,10 @@ public class BlockListener implements Listener {
             priority = EventPriority.HIGHEST
     )
     public void onBlockPlace(BlockPlaceEvent event) {
+
+        // mark block as player placed
+        RaidCraft.setMetaData(event.getBlock(), MetaDataKey.PLAYER_PLACED_BLOCK, true);
+
         if(event.getPlayer().getGameMode() == GameMode.CREATIVE && event.getPlayer().hasPermission("worldcontrol.build"))
             return;
 
