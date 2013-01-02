@@ -4,7 +4,6 @@ import com.silthus.raidcraft.util.component.DateUtil;
 import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import com.sk89q.commandbook.CommandBook;
 import de.raidcraft.RaidCraft;
-import de.raidcraft.util.MetaDataKey;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Location;
@@ -192,7 +191,7 @@ public class Regeneration {
     public void regenerateBlockLog(BlockLog log) {
         log.getLocation().getBlock().setType(log.getBlockBeforeMaterial());
         // remove mark
-        RaidCraft.setMetaData(log.getLocation().getBlock(), MetaDataKey.PLAYER_PLACED_BLOCK, false);
+        RaidCraft.removePlayerPlacedBlock(log.getBlock());
 
         byte dataByte = (byte)log.getBlockBeforeData();
 

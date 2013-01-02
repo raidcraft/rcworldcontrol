@@ -1,7 +1,6 @@
 package de.raidcraft.worldcontrol.listener;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.util.MetaDataKey;
 import de.raidcraft.worldcontrol.*;
 import de.raidcraft.worldcontrol.exceptions.*;
 import org.bukkit.ChatColor;
@@ -33,7 +32,7 @@ public class BlockListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
 
         // mark block as player placed
-        RaidCraft.setMetaData(event.getBlock(), MetaDataKey.PLAYER_PLACED_BLOCK, true);
+        RaidCraft.setPlayerPlacedBlock(event.getBlock());
 
         if(event.getPlayer().hasPermission("worldcontrol.build"))
             return;

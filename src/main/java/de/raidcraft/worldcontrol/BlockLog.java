@@ -4,7 +4,6 @@ import com.silthus.raidcraft.util.component.DateUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
 /**
  * Author: Philip
@@ -13,8 +12,8 @@ import org.bukkit.entity.Player;
  */
 public class BlockLog {
     private int id;
-    private String player;
-    private Location location;
+    private final String player;
+    private final Location location;
     private Material blockBeforeMaterial = Material.AIR;
     private int blockBeforeData = 0;
     private Material blockAfterMaterial = Material.AIR;
@@ -102,5 +101,10 @@ public class BlockLog {
     public String getTime() {
 
         return time;
+    }
+
+    public Block getBlock() {
+
+        return location.getBlock();
     }
 }
