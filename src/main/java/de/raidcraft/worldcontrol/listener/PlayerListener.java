@@ -1,6 +1,7 @@
 package de.raidcraft.worldcontrol.listener;
 
-import de.raidcraft.worldcontrol.WorldControlModule;
+import de.raidcraft.RaidCraft;
+import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.WorldGuardManager;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -16,16 +17,17 @@ public class PlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerEmptyBucket(PlayerBucketEmptyEvent event) {
-        if(event.getPlayer().hasPermission("worldcontrol.build"))
+
+        if (event.getPlayer().hasPermission("worldcontrol.build"))
             return;
 
         //check world
-        if(!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+        if (!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getPlayer().getLocation());
-        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
             return;
         }
 

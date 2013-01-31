@@ -1,0 +1,6 @@
+name: WorldControl
+main: de.raidcraft.worldcontrol
+version: ${project.version}#${build.number}
+author: Strasse36
+website: www.raid-craft.de
+depend: [RaidCraft-API]

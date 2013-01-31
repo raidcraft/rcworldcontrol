@@ -1,11 +1,10 @@
 package de.raidcraft.worldcontrol.tables;
 
-import com.silthus.raidcraft.util.component.database.Table;
-import com.sk89q.commandbook.CommandBook;
+import de.raidcraft.RaidCraft;
+import de.raidcraft.api.database.Table;
 import de.raidcraft.worldcontrol.AllowedItem;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
-import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,9 +13,7 @@ import org.bukkit.block.Block;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author: Philip
@@ -24,17 +21,19 @@ import java.util.Map;
  * Description:
  */
 public class BlockLogsTable extends Table {
-    
+
     private String selectNewestQuery = "SELECT id, player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM " +
             "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
             "ORDER BY timestamp) AS t1 GROUP BY world, x, y, z";
-    
+
     public BlockLogsTable() {
+
         super("block_logs", "worldcontrol_");
     }
 
     @Override
     public void createTable() {
+
         try {
             getConnection().prepareStatement(
                     "CREATE TABLE `" + getTableName() + "` (" +
@@ -52,11 +51,12 @@ public class BlockLogsTable extends Table {
                             "PRIMARY KEY ( `id` )" +
                             ")").execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
     public void addLog(BlockLog log) {
+
         try {
             // insert only if no entry exists for coordinate
             ResultSet resultSet = getConnection().prepareStatement(
@@ -86,40 +86,12 @@ public class BlockLogsTable extends Table {
                             ")"
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
     public List<BlockLog> getAllOldestLogs() {
-        List<BlockLog> blockLogs = new ArrayList<>();
-        try {
-            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
 
-            while (resultSet.next()) {
-                blockLogs.add(new BlockLog(
-                        resultSet.getInt("id"),
-                        resultSet.getString("player"),
-                        new Location(
-                            Bukkit.getWorld(resultSet.getString("world")),
-                            resultSet.getDouble("x"),
-                            resultSet.getDouble("y"),
-                            resultSet.getDouble("z")
-                        ),
-                        Material.getMaterial(resultSet.getString("before_material")),
-                        resultSet.getShort("before_data"),
-                        Material.getMaterial(resultSet.getString("after_material")),
-                        resultSet.getShort("after_data"),
-                        resultSet.getString("time")
-                ));
-            }
-        }
-        catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
-        }
-        return blockLogs;
-    }
-
-    public List<BlockLog> getAllLogs() {
         List<BlockLog> blockLogs = new ArrayList<>();
         try {
             ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
@@ -141,14 +113,43 @@ public class BlockLogsTable extends Table {
                         resultSet.getString("time")
                 ));
             }
+        } catch (SQLException e) {
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
-        catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+        return blockLogs;
+    }
+
+    public List<BlockLog> getAllLogs() {
+
+        List<BlockLog> blockLogs = new ArrayList<>();
+        try {
+            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
+
+            while (resultSet.next()) {
+                blockLogs.add(new BlockLog(
+                        resultSet.getInt("id"),
+                        resultSet.getString("player"),
+                        new Location(
+                                Bukkit.getWorld(resultSet.getString("world")),
+                                resultSet.getDouble("x"),
+                                resultSet.getDouble("y"),
+                                resultSet.getDouble("z")
+                        ),
+                        Material.getMaterial(resultSet.getString("before_material")),
+                        resultSet.getShort("before_data"),
+                        Material.getMaterial(resultSet.getString("after_material")),
+                        resultSet.getShort("after_data"),
+                        resultSet.getString("time")
+                ));
+            }
+        } catch (SQLException e) {
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
         return blockLogs;
     }
 
     public boolean isNearBlockPlaced(Block block, AllowedItem item) {
+
         try {
             ResultSet resultSet = getConnection().prepareStatement(
                     "SELECT * FROM " + getTableName()
@@ -163,30 +164,31 @@ public class BlockLogsTable extends Table {
             while (resultSet.next()) {
                 return true;
             }
-        }
-        catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+        } catch (SQLException e) {
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
         return false;
     }
 
     public void deleteLog(int id) {
+
         try {
             getConnection().prepareStatement(
                     "DELETE FROM " + getTableName() + " WHERE id =  '" + id + "'"
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
     public void deleteAll() {
+
         try {
             getConnection().prepareStatement(
                     "DELETE FROM " + getTableName()
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
@@ -201,21 +203,21 @@ public class BlockLogsTable extends Table {
             getConnection().prepareStatement("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`").execute();
             getConnection().prepareStatement("DROP TABLE `" + getTableName() + "_temp`").execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
 
         LogSaver.INSTANCE.setBlocked(false);
     }
 
     // !!!this hardcore query crash the mysql service!!!
-//    public void cleanTable() {
-//        try {
-//            getConnection().prepareStatement(
-//                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +
-//                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
-//                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
-//        } catch (SQLException e) {
-//            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
-//        }
-//    }
+    //    public void cleanTable() {
+    //        try {
+    //            getConnection().prepareStatement(
+    //                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +
+    //                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
+    //                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
+    //        } catch (SQLException e) {
+    //            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+    //        }
+    //    }
 }

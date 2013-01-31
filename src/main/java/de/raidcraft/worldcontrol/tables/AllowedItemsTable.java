@@ -1,7 +1,7 @@
 package de.raidcraft.worldcontrol.tables;
 
-import com.silthus.raidcraft.util.component.database.Table;
-import com.sk89q.commandbook.CommandBook;
+import de.raidcraft.RaidCraft;
+import de.raidcraft.api.database.Table;
 import de.raidcraft.worldcontrol.AllowedItem;
 
 import java.sql.ResultSet;
@@ -17,14 +17,16 @@ import java.util.List;
 public class AllowedItemsTable extends Table {
 
     public AllowedItemsTable() {
+
         super("allowed_items", "worldcontrol_");
     }
 
     @Override
     public void createTable() {
+
         try {
             getConnection().prepareStatement(
-"CREATE TABLE `" + getTableName() + "` (" +
+                    "CREATE TABLE `" + getTableName() + "` (" +
                             "`id` INT NOT NULL AUTO_INCREMENT, " +
                             "`material` VARCHAR( 32 ) NOT NULL, " +
                             "`break` TINYINT( 1 ) NOT NULL, " +
@@ -37,11 +39,13 @@ public class AllowedItemsTable extends Table {
                             "PRIMARY KEY ( `id` )" +
                             ")").execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning(e.getMessage());
+            RaidCraft.LOGGER.warning(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public List<AllowedItem> getAllowedItems() {
+
         List<AllowedItem> allowedItems = new ArrayList<>();
         try {
             ResultSet resultSet = getConnection().prepareStatement(
@@ -59,8 +63,9 @@ public class AllowedItemsTable extends Table {
                         resultSet.getBoolean("farm_only")
                 ));
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
+            RaidCraft.LOGGER.warning(e.getMessage());
+            e.printStackTrace();
         }
         return allowedItems;
     }

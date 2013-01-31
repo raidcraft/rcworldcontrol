@@ -8,6 +8,7 @@ import org.bukkit.Material;
  * Description:
  */
 public class AllowedItem {
+
     private Material material;
     private boolean blockBreak;
     private boolean blockPlace;
@@ -18,6 +19,7 @@ public class AllowedItem {
     private boolean farmOnly;
 
     public AllowedItem(String materialName, int placeDistance, boolean blockBreak, boolean blockPlace, boolean dropItem, long regenerationTime, int maxPlaceHeight, boolean farmOnly) {
+
         this.material = Material.getMaterial(materialName);
         this.localPlaceDistance = placeDistance;
         this.blockBreak = blockBreak;

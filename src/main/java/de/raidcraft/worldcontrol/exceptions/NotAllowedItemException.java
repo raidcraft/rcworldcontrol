@@ -5,7 +5,8 @@ package de.raidcraft.worldcontrol.exceptions;
  */
 public class NotAllowedItemException extends Throwable {
 
-	public NotAllowedItemException() {
-		super("Dieser Block ist hier verboten!");
-	}
+    public NotAllowedItemException() {
+
+        super("Dieser Block ist hier verboten!");
+    }
 }

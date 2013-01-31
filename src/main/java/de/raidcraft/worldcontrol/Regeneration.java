@@ -1,11 +1,10 @@
 package de.raidcraft.worldcontrol;
 
-import com.silthus.raidcraft.util.component.DateUtil;
-import com.silthus.raidcraft.util.component.database.ComponentDatabase;
-import com.sk89q.commandbook.CommandBook;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.util.DateUtil;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.sql.Connection;
@@ -22,6 +21,7 @@ import java.util.Map;
  * Description:
  */
 public class Regeneration {
+
     public final static Regeneration INSTANCE = new Regeneration();
 
     private boolean regenerationRunning = false;
@@ -32,9 +32,11 @@ public class Regeneration {
     private int restoreTaskId = 0;
 
     public void startRestoreTask() {
-        restoreTaskId = CommandBook.inst().getServer().getScheduler().scheduleSyncRepeatingTask(CommandBook.inst(), new Runnable() {
+
+        restoreTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
             public void run() {
-                if(blocksToRestore.size() == 0) {
+
+                if (blocksToRestore.size() == 0) {
                     WCLogger.info("No blocks to regenerate!");
                     stopRestoreTask();
                     return;
@@ -46,7 +48,7 @@ public class Regeneration {
                     regenerateBlockLog(log);
                 }
                 // activate physics and logs after 5 seconds
-                CommandBook.inst().getServer().getScheduler().scheduleSyncDelayedTask(CommandBook.inst(), new Runnable() {
+                RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().scheduleSyncDelayedTask(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
                     public void run() {
 
                         LogSaver.INSTANCE.setBlocked(false);
@@ -55,13 +57,14 @@ public class Regeneration {
                 WCLogger.info("Regeneration finished!");
                 WCLogger.info("Start database cleanup...");
 
-                CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
+                RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().scheduleAsyncDelayedTask(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
                     public void run() {
 
-                        final Connection connection = ComponentDatabase.INSTANCE.getNewConnection();
+                        BlockLogsTable table = RaidCraft.getTable(BlockLogsTable.class);
+                        final Connection connection = table.getConnection();
                         PreparedStatement statement = null;
 
-                        String updateQuery = "DELETE FROM `" + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() +
+                        String updateQuery = "DELETE FROM `" + table.getTableName() +
                                 "` WHERE id = ?";
 
                         try {
@@ -69,29 +72,29 @@ public class Regeneration {
                             statement = connection.prepareStatement(updateQuery);
 
                             int i = 1;
-//                            WCLogger.info("Try to delete " + blocksToRestore.size() + " rows...");
+                            //                            WCLogger.info("Try to delete " + blocksToRestore.size() + " rows...");
                             for (BlockLog log : blocksToRestore) {
                                 statement.setInt(1, log.getId());
                                 statement.executeUpdate();
                                 i++;
 
-                                if(i % 100 == 0) {
-//                                    WCLogger.info("Already deleted " + i + " rows!");
+                                if (i % 100 == 0) {
+                                    //                                    WCLogger.info("Already deleted " + i + " rows!");
                                     connection.commit();
                                 }
                             }
 
                             connection.commit();
                         } catch (final SQLException ex) {
-                            CommandBook.logger().warning("[WC] SQL exception: " + ex.getMessage());
+                            RaidCraft.LOGGER.warning("[WC] SQL exception: " + ex.getMessage());
                         } finally {
                             try {
-                                if(statement != null)
+                                if (statement != null)
                                     statement.close();
-                                if(connection != null)
+                                if (connection != null)
                                     connection.close();
                             } catch (final SQLException ex) {
-                                CommandBook.logger().warning("[WC] SQL exception on close: " + ex.getMessage());
+                                RaidCraft.LOGGER.warning("[WC] SQL exception on close: " + ex.getMessage());
                             }
                             WCLogger.info("Finished database cleanup!");
                             blocksToRestore.clear();
@@ -102,22 +105,25 @@ public class Regeneration {
 
                 stopRestoreTask();
             }
-        }, 0, 10*20);
+        }, 0, 10 * 20);
     }
 
     public void stopRestoreTask() {
-        CommandBook.inst().getServer().getScheduler().cancelTask(restoreTaskId);
+
+        RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().cancelTask(restoreTaskId);
     }
 
     public void regenerateBlocks(boolean all) {
-        if(all) {
+
+        if (all) {
             regenerateAll = true;
         }
         regenerateBlocks();
     }
 
     public void regenerateBlocks() {
-        if(!canRegenerate()) {
+
+        if (!canRegenerate()) {
             return;
         }
 
@@ -125,38 +131,38 @@ public class Regeneration {
         allSavedLogs.clear();
         stopRestoreTask();
 
-//        WCLogger.info("Clean log table...");
-        ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).cleanTable();
-//        WCLogger.info("Finished table cleanup!");
+        //        WCLogger.info("Clean log table...");
+        RaidCraft.getTable(BlockLogsTable.class).cleanTable();
+        //        WCLogger.info("Finished table cleanup!");
 
         WCLogger.info("Collect blocks for regeneration...");
 
-        CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
+        RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().scheduleAsyncDelayedTask(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
             public void run() {
-                
+
                 restored = 0;
 
-                List<BlockLog> allLogs = ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getAllLogs();
-                for(BlockLog log : allLogs) {
+                List<BlockLog> allLogs = RaidCraft.getTable(BlockLogsTable.class).getAllLogs();
+                for (BlockLog log : allLogs) {
                     allSavedLogs.put(log.getLocation(), log);
                 }
 
-                for(Map.Entry<Location, BlockLog> entry : allSavedLogs.entrySet()) {
+                for (Map.Entry<Location, BlockLog> entry : allSavedLogs.entrySet()) {
                     BlockLog log = entry.getValue();
                     // skips already processed blocks
-                    if(log == null) {
+                    if (log == null) {
                         continue;
                     }
-                    AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItems().get(log.getBlockBeforeMaterial());
-                    if(allowedItem == null) {
+                    AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItems().get(log.getBlockBeforeMaterial());
+                    if (allowedItem == null) {
                         continue;
                     }
-                    double rnd = Math.random() * (WorldControlModule.INSTANCE.config.timeFactor/100);
-                    if(regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
+                    double rnd = Math.random() * (RaidCraft.getComponent(WorldControlPlugin.class).config.timeFactor / 100);
+                    if (regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
                     }
                 }
-                
+
                 startRestoreTask();
                 WCLogger.info(restored + " blocks found!");
                 regenerationRunning = false;
@@ -166,39 +172,41 @@ public class Regeneration {
     }
 
     private void regenerateRecursive(Location blockLocation) {
-        if(!allSavedLogs.containsKey(blockLocation)
+
+        if (!allSavedLogs.containsKey(blockLocation)
                 || allSavedLogs.get(blockLocation) == null) {
             return;
         }
         restored++;
         blocksToRestore.add(allSavedLogs.get(blockLocation));
-//        regenerateBlockLog(allSavedLogs.get(blockLocation));
+        //        regenerateBlockLog(allSavedLogs.get(blockLocation));
         allSavedLogs.put(blockLocation, null);
 
-//        if(restored >= informCnt * 100) {
-//            informCnt++;
-//            CommandBook.logger().info("[WC] " + restored + " Bloecke wurden bereits regeneriert.");
-//        }
+        //        if(restored >= informCnt * 100) {
+        //            informCnt++;
+        //            RaidCraft.LOGGER.info("[WC] " + restored + " Bloecke wurden bereits regeneriert.");
+        //        }
 
-        regenerateRecursive(blockLocation.add( 0,  1,  0));
-        regenerateRecursive(blockLocation.add( 1,  0,  0));
-        regenerateRecursive(blockLocation.add( 0,  0,  1));
-        regenerateRecursive(blockLocation.add(-1,  0,  0));
-        regenerateRecursive(blockLocation.add( 0,  0, -1));
-        regenerateRecursive(blockLocation.add( 0, -1,  0));
+        regenerateRecursive(blockLocation.add(0, 1, 0));
+        regenerateRecursive(blockLocation.add(1, 0, 0));
+        regenerateRecursive(blockLocation.add(0, 0, 1));
+        regenerateRecursive(blockLocation.add(-1, 0, 0));
+        regenerateRecursive(blockLocation.add(0, 0, -1));
+        regenerateRecursive(blockLocation.add(0, -1, 0));
     }
 
     public void regenerateBlockLog(BlockLog log) {
+
         log.getLocation().getBlock().setType(log.getBlockBeforeMaterial());
         // remove mark
         RaidCraft.removePlayerPlacedBlock(log.getBlock());
 
-        byte dataByte = (byte)log.getBlockBeforeData();
+        byte dataByte = (byte) log.getBlockBeforeData();
 
         // make leaves permanent
-//        if(log.getBlockAfterMaterial() == Material.LEAVES) {
-//            dataByte = 1<<4;
-//        }
+        //        if(log.getBlockAfterMaterial() == Material.LEAVES) {
+        //            dataByte = 1<<4;
+        //        }
         log.getLocation().getBlock().setData(dataByte, true);
     }
 

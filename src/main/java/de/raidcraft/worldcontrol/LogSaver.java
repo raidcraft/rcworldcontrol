@@ -1,14 +1,11 @@
 package de.raidcraft.worldcontrol;
 
-import com.silthus.raidcraft.util.component.database.ComponentDatabase;
-import com.sk89q.commandbook.CommandBook;
+import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
-import de.raidcraft.worldcontrol.util.WCLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,20 +15,22 @@ import java.util.List;
  * Description:
  */
 public class LogSaver {
+
     public final static LogSaver INSTANCE = new LogSaver();
 
-    private List<BlockLog> logs = new ArrayList<> ();
+    private List<BlockLog> logs = new ArrayList<>();
     private List<BlockLog> savingLogs = new ArrayList<>();
     private int savingProcessed = 0;
     private boolean saving = false;
     private boolean blocked = false;
 
     public void addBlockLog(BlockLog log) {
-        if(isBlocked()) {
+
+        if (isBlocked()) {
             return;
         }
-        for(BlockLog currLog : logs) {
-            if(log.getLocation().getBlockX() == currLog.getLocation().getBlockX()
+        for (BlockLog currLog : logs) {
+            if (log.getLocation().getBlockX() == currLog.getLocation().getBlockX()
                     && log.getLocation().getBlockY() == currLog.getLocation().getBlockY()
                     && log.getLocation().getBlockZ() == currLog.getLocation().getBlockZ()) {
                 return;
@@ -41,11 +40,12 @@ public class LogSaver {
     }
 
     public void save() {
-        if(logs.size() <= 0) {
+
+        if (logs.size() <= 0) {
             return;
         }
-        if(saving) {
-            CommandBook.logger().info("[WC] Saving queue blocked! Left: " + (savingLogs.size() - savingProcessed));
+        if (saving) {
+            RaidCraft.LOGGER.info("[WC] Saving queue blocked! Left: " + (savingLogs.size() - savingProcessed));
             return;
         }
         saving = true;
@@ -53,17 +53,18 @@ public class LogSaver {
         savingLogs = logs;
         logs = new ArrayList<>();
 
-        final Connection connection = ComponentDatabase.INSTANCE.getNewConnection();
+        BlockLogsTable table = RaidCraft.getTable(BlockLogsTable.class);
+        final Connection connection = table.getConnection();
         PreparedStatement statement = null;
-        
-        String insertQuery = "INSERT INTO " + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() + 
+
+        String insertQuery = "INSERT INTO " + table.getTableName() +
                 " (player, before_material, before_data, after_material, after_data, world, x, y, z, time) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             connection.setAutoCommit(false);
             statement = connection.prepareStatement(insertQuery);
-            for(BlockLog log : savingLogs) {
+            for (BlockLog log : savingLogs) {
 
                 statement.setString(1, log.getPlayer());
                 statement.setString(2, log.getBlockBeforeMaterial().name());
@@ -78,23 +79,23 @@ public class LogSaver {
                 statement.executeUpdate();
                 savingProcessed++;
 
-                if((savingProcessed + 1) % 1000 == 0) {
+                if ((savingProcessed + 1) % 1000 == 0) {
                     connection.commit();
                 }
             }
             connection.commit();
         } catch (final SQLException ex) {
-            CommandBook.logger().warning("[WC] SQL exception: " + ex.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + ex.getMessage());
         } finally {
             try {
                 if (statement != null)
                     statement.close();
-                if(connection != null)
+                if (connection != null)
                     connection.close();
             } catch (final SQLException ex) {
-                CommandBook.logger().warning("[WC] SQL exception on close: " + ex.getMessage());
+                RaidCraft.LOGGER.warning("[WC] SQL exception on close: " + ex.getMessage());
             }
-//            WCLogger.info("Saved " + savingLogs.size() + " logs!");
+            //            WCLogger.info("Saved " + savingLogs.size() + " logs!");
             savingProcessed = 0;
             savingLogs.clear();
             saving = false;
@@ -112,10 +113,12 @@ public class LogSaver {
     }
 
     public void setBlocked(boolean state) {
+
         blocked = state;
     }
 
     public boolean isBlocked() {
+
         return blocked;
     }
 }

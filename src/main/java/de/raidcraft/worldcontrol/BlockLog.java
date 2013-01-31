@@ -1,6 +1,6 @@
 package de.raidcraft.worldcontrol;
 
-import com.silthus.raidcraft.util.component.DateUtil;
+import de.raidcraft.util.DateUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
  * Description:
  */
 public class BlockLog {
+
     private int id;
     private final String player;
     private final Location location;
@@ -26,20 +27,20 @@ public class BlockLog {
         this.location = location;
         this.time = DateUtil.getCurrentDateString();
 
-        if(blockBefore != null) {
+        if (blockBefore != null) {
             this.blockBeforeMaterial = blockBefore.getType();
             this.blockBeforeData = blockBefore.getData();
         }
 
-        if(blockAfter != null) {
+        if (blockAfter != null) {
             this.blockAfterMaterial = blockAfter.getType();
             this.blockAfterData = blockAfter.getData();
         }
     }
 
     public BlockLog(int id
-            ,String player
-            , Location location 
+            , String player
+            , Location location
             , Material blockBeforeMaterial
             , short blockBeforeData
             , Material blockAfterMaterial
