@@ -91,8 +91,6 @@ public class Regeneration {
                             try {
                                 if (statement != null)
                                     statement.close();
-                                if (connection != null)
-                                    connection.close();
                             } catch (final SQLException ex) {
                                 RaidCraft.LOGGER.warning("[WC] SQL exception on close: " + ex.getMessage());
                             }
