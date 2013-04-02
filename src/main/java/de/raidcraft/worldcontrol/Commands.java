@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class Commands {
 
-    public Commands(WorldControlModule module) {
+    public Commands(WorldControlPlugin module) {
     }
 
     @Command(
@@ -32,9 +32,9 @@ public class Commands {
 
     public static class NestedCommands {
         private List<String> completeRegeneration = new ArrayList<>();
-        private final WorldControlModule module;
+        private final WorldControlPlugin module;
 
-        public NestedCommands(WorldControlModule module) {
+        public NestedCommands(WorldControlPlugin module) {
             this.module = module;
         }
 
@@ -106,13 +106,13 @@ public class Commands {
         @CommandPermissions("worldcontrol.regenerate")
         public void physics(CommandContext context, CommandSender sender) {
             if(context.getString(0).equalsIgnoreCase("on")) {
-                WorldControlModule.INSTANCE.allowPhysics = true;
+                WorldControlPlugin.INST.allowPhysics = true;
                 sender.sendMessage(ChatColor.DARK_GREEN + "Blockphysik eingeschaltet!");
                 return;
             }
 
             if(context.getString(0).equalsIgnoreCase("off")) {
-                WorldControlModule.INSTANCE.allowPhysics = false;
+                WorldControlPlugin.INST.allowPhysics = false;
                 sender.sendMessage(ChatColor.DARK_GREEN + "Blockphysik ausgeschaltet!");
                 return;
             }

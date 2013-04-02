@@ -1,11 +1,11 @@
 package de.raidcraft.worldcontrol;
 
-import com.silthus.raidcraft.util.component.DateUtil;
-import com.silthus.raidcraft.util.component.database.ComponentDatabase;
 import com.sk89q.commandbook.CommandBook;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.util.DateUtil;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.sql.Connection;
@@ -32,7 +32,7 @@ public class Regeneration {
     private int restoreTaskId = 0;
 
     public void startRestoreTask() {
-        restoreTaskId = CommandBook.inst().getServer().getScheduler().scheduleSyncRepeatingTask(CommandBook.inst(), new Runnable() {
+        restoreTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CommandBook.inst(), new Runnable() {
             public void run() {
                 if(blocksToRestore.size() == 0) {
                     WCLogger.info("No blocks to regenerate!");
@@ -46,7 +46,7 @@ public class Regeneration {
                     regenerateBlockLog(log);
                 }
                 // activate physics and logs after 5 seconds
-                CommandBook.inst().getServer().getScheduler().scheduleSyncDelayedTask(CommandBook.inst(), new Runnable() {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandBook.inst(), new Runnable() {
                     public void run() {
 
                         LogSaver.INSTANCE.setBlocked(false);
@@ -55,13 +55,13 @@ public class Regeneration {
                 WCLogger.info("Regeneration finished!");
                 WCLogger.info("Start database cleanup...");
 
-                CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
+                Bukkit.getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
                     public void run() {
 
-                        final Connection connection = ComponentDatabase.INSTANCE.getNewConnection();
+                        final Connection connection = RaidCraft.getTable(BlockLogsTable.class).getConnection();
                         PreparedStatement statement = null;
 
-                        String updateQuery = "DELETE FROM `" + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() +
+                        String updateQuery = "DELETE FROM `" + RaidCraft.getTable(BlockLogsTable.class).getTableName() +
                                 "` WHERE id = ?";
 
                         try {
@@ -82,16 +82,14 @@ public class Regeneration {
                             }
 
                             connection.commit();
+                            connection.setAutoCommit(true);
                         } catch (final SQLException ex) {
-                            CommandBook.logger().warning("[WC] SQL exception: " + ex.getMessage());
+                            RaidCraft.LOGGER.warning("[WC] SQL exception: " + ex.getMessage());
                         } finally {
                             try {
-                                if(statement != null)
-                                    statement.close();
-                                if(connection != null)
-                                    connection.close();
-                            } catch (final SQLException ex) {
-                                CommandBook.logger().warning("[WC] SQL exception on close: " + ex.getMessage());
+                                connection.setAutoCommit(true);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
                             WCLogger.info("Finished database cleanup!");
                             blocksToRestore.clear();
@@ -106,7 +104,7 @@ public class Regeneration {
     }
 
     public void stopRestoreTask() {
-        CommandBook.inst().getServer().getScheduler().cancelTask(restoreTaskId);
+        Bukkit.getScheduler().cancelTask(restoreTaskId);
     }
 
     public void regenerateBlocks(boolean all) {
@@ -126,17 +124,17 @@ public class Regeneration {
         stopRestoreTask();
 
 //        WCLogger.info("Clean log table...");
-        ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).cleanTable();
+        RaidCraft.getTable(BlockLogsTable.class).cleanTable();
 //        WCLogger.info("Finished table cleanup!");
 
         WCLogger.info("Collect blocks for regeneration...");
 
-        CommandBook.inst().getServer().getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(CommandBook.inst(), new Runnable() {
             public void run() {
                 
                 restored = 0;
 
-                List<BlockLog> allLogs = ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getAllLogs();
+                List<BlockLog> allLogs = RaidCraft.getTable(BlockLogsTable.class).getAllLogs();
                 for(BlockLog log : allLogs) {
                     allSavedLogs.put(log.getLocation(), log);
                 }
@@ -147,11 +145,11 @@ public class Regeneration {
                     if(log == null) {
                         continue;
                     }
-                    AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItems().get(log.getBlockBeforeMaterial());
+                    AllowedItem allowedItem = WorldControlPlugin.INST.getAllowedItems().get(log.getBlockBeforeMaterial());
                     if(allowedItem == null) {
                         continue;
                     }
-                    double rnd = Math.random() * (WorldControlModule.INSTANCE.config.timeFactor/100);
+                    double rnd = Math.random() * (WorldControlPlugin.INST.config.timeFactor/100);
                     if(regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
                     }
@@ -177,7 +175,7 @@ public class Regeneration {
 
 //        if(restored >= informCnt * 100) {
 //            informCnt++;
-//            CommandBook.logger().info("[WC] " + restored + " Bloecke wurden bereits regeneriert.");
+//            RaidCraft.LOGGER.info("[WC] " + restored + " Bloecke wurden bereits regeneriert.");
 //        }
 
         regenerateRecursive(blockLocation.add( 0,  1,  0));

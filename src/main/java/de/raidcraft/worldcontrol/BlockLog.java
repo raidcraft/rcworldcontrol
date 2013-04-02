@@ -1,6 +1,6 @@
 package de.raidcraft.worldcontrol;
 
-import com.silthus.raidcraft.util.component.DateUtil;
+import de.raidcraft.util.DateUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

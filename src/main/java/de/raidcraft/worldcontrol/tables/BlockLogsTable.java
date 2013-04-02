@@ -1,11 +1,10 @@
 package de.raidcraft.worldcontrol.tables;
 
-import com.silthus.raidcraft.util.component.database.Table;
-import com.sk89q.commandbook.CommandBook;
+import de.raidcraft.RaidCraft;
+import de.raidcraft.api.database.Table;
 import de.raidcraft.worldcontrol.AllowedItem;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
-import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,9 +13,7 @@ import org.bukkit.block.Block;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author: Philip
@@ -52,7 +49,7 @@ public class BlockLogsTable extends Table {
                             "PRIMARY KEY ( `id` )" +
                             ")").execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
@@ -86,7 +83,7 @@ public class BlockLogsTable extends Table {
                             ")"
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
@@ -114,7 +111,7 @@ public class BlockLogsTable extends Table {
             }
         }
         catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
         return blockLogs;
     }
@@ -143,7 +140,7 @@ public class BlockLogsTable extends Table {
             }
         }
         catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
         return blockLogs;
     }
@@ -165,7 +162,7 @@ public class BlockLogsTable extends Table {
             }
         }
         catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
         return false;
     }
@@ -176,7 +173,7 @@ public class BlockLogsTable extends Table {
                     "DELETE FROM " + getTableName() + " WHERE id =  '" + id + "'"
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
@@ -186,7 +183,7 @@ public class BlockLogsTable extends Table {
                     "DELETE FROM " + getTableName()
             ).execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
     }
 
@@ -201,7 +198,7 @@ public class BlockLogsTable extends Table {
             getConnection().prepareStatement("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`").execute();
             getConnection().prepareStatement("DROP TABLE `" + getTableName() + "_temp`").execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
 
         LogSaver.INSTANCE.setBlocked(false);
@@ -215,7 +212,7 @@ public class BlockLogsTable extends Table {
 //                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
 //                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
 //        } catch (SQLException e) {
-//            CommandBook.logger().warning("[WC] SQL exception: " + e.getMessage());
+//            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
 //        }
 //    }
 }

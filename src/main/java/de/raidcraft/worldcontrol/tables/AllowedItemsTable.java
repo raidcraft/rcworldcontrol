@@ -1,7 +1,7 @@
 package de.raidcraft.worldcontrol.tables;
 
-import com.silthus.raidcraft.util.component.database.Table;
-import com.sk89q.commandbook.CommandBook;
+import de.raidcraft.RaidCraft;
+import de.raidcraft.api.database.Table;
 import de.raidcraft.worldcontrol.AllowedItem;
 
 import java.sql.ResultSet;
@@ -37,7 +37,7 @@ public class AllowedItemsTable extends Table {
                             "PRIMARY KEY ( `id` )" +
                             ")").execute();
         } catch (SQLException e) {
-            CommandBook.logger().warning(e.getMessage());
+            RaidCraft.LOGGER.warning(e.getMessage());
         }
     }
 

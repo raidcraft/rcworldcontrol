@@ -1,14 +1,11 @@
 package de.raidcraft.worldcontrol;
 
-import com.silthus.raidcraft.util.component.database.ComponentDatabase;
-import com.sk89q.commandbook.CommandBook;
+import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
-import de.raidcraft.worldcontrol.util.WCLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +42,7 @@ public class LogSaver {
             return;
         }
         if(saving) {
-            CommandBook.logger().info("[WC] Saving queue blocked! Left: " + (savingLogs.size() - savingProcessed));
+            RaidCraft.LOGGER.info("[WC] Saving queue blocked! Left: " + (savingLogs.size() - savingProcessed));
             return;
         }
         saving = true;
@@ -53,10 +50,10 @@ public class LogSaver {
         savingLogs = logs;
         logs = new ArrayList<>();
 
-        final Connection connection = ComponentDatabase.INSTANCE.getNewConnection();
+        final Connection connection = RaidCraft.getTable(BlockLogsTable.class).getConnection();
         PreparedStatement statement = null;
         
-        String insertQuery = "INSERT INTO " + ComponentDatabase.INSTANCE.getTable(BlockLogsTable.class).getTableName() + 
+        String insertQuery = "INSERT INTO " + RaidCraft.getTable(BlockLogsTable.class).getTableName() +
                 " (player, before_material, before_data, after_material, after_data, world, x, y, z, time) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -83,18 +80,16 @@ public class LogSaver {
                 }
             }
             connection.commit();
+            connection.setAutoCommit(true);
         } catch (final SQLException ex) {
-            CommandBook.logger().warning("[WC] SQL exception: " + ex.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + ex.getMessage());
         } finally {
             try {
-                if (statement != null)
-                    statement.close();
-                if(connection != null)
-                    connection.close();
-            } catch (final SQLException ex) {
-                CommandBook.logger().warning("[WC] SQL exception on close: " + ex.getMessage());
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-//            WCLogger.info("Saved " + savingLogs.size() + " logs!");
+            //            WCLogger.info("Saved " + savingLogs.size() + " logs!");
             savingProcessed = 0;
             savingLogs.clear();
             saving = false;

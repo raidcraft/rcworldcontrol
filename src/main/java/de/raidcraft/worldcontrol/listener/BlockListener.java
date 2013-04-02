@@ -38,10 +38,10 @@ public class BlockListener implements Listener {
             return;
 
         //check world
-        if(!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+        if(!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlPlugin.INST.config.world))
             return;
 
-        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlPlugin.INST.allowPhysics) {
             sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
             return;
@@ -49,12 +49,12 @@ public class BlockListener implements Listener {
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if(region != null && !region.startsWith(WorldControlPlugin.INST.config.farmPrefix)) {
             return;
         }
 
         try {
-            AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItem(event.getBlock());
+            AllowedItem allowedItem = WorldControlPlugin.INST.getAllowedItem(event.getBlock());
 
             // check if can placed
             if(!allowedItem.canBlockPlace()) {
@@ -72,7 +72,7 @@ public class BlockListener implements Listener {
             }
 
             // check local place limit
-            if(WorldControlModule.INSTANCE.isNearBlockPlaced(event.getBlock(), allowedItem)) {
+            if(WorldControlPlugin.INST.isNearBlockPlaced(event.getBlock(), allowedItem)) {
                 throw new LocalPlaceLimitReachedException();
             }
 
@@ -104,10 +104,10 @@ public class BlockListener implements Listener {
             return;
 
         //check world
-        if(!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+        if(!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlPlugin.INST.config.world))
             return;
 
-        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlPlugin.INST.allowPhysics) {
             sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
             return;
@@ -115,12 +115,12 @@ public class BlockListener implements Listener {
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if(region != null && !region.startsWith(WorldControlPlugin.INST.config.farmPrefix)) {
             return;
         }
 
         try {
-            AllowedItem allowedItem = WorldControlModule.INSTANCE.getAllowedItem(event.getBlock());
+            AllowedItem allowedItem = WorldControlPlugin.INST.getAllowedItem(event.getBlock());
 
             // check if can placed
             if(!allowedItem.canBlockBreak()) {
@@ -158,10 +158,10 @@ public class BlockListener implements Listener {
     )
     public void onGravelSandMove(BlockPhysicsEvent event) {
         //check world
-        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlPlugin.INST.config.world))
             return;
 
-        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlPlugin.INST.allowPhysics) {
             event.setCancelled(true);
             return;
         }
@@ -172,7 +172,7 @@ public class BlockListener implements Listener {
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if(region != null && !region.startsWith(WorldControlPlugin.INST.config.farmPrefix)) {
             return;
         }
 
@@ -186,17 +186,17 @@ public class BlockListener implements Listener {
     public void onExplosion(EntityExplodeEvent event) {
 
         //check world
-        if(!event.getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+        if(!event.getLocation().getWorld().getName().equalsIgnoreCase(WorldControlPlugin.INST.config.world))
             return;
 
-        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlPlugin.INST.allowPhysics) {
             event.setCancelled(true);
             return;
         }
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getLocation());
-        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if(region != null && !region.startsWith(WorldControlPlugin.INST.config.farmPrefix)) {
             return;
         }
 
@@ -212,17 +212,17 @@ public class BlockListener implements Listener {
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
 
         //check world
-        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlPlugin.INST.config.world))
             return;
 
-        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlPlugin.INST.allowPhysics) {
             event.setCancelled(true);
             return;
         }
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if(region != null && !region.startsWith(WorldControlPlugin.INST.config.farmPrefix)) {
             return;
         }
 
@@ -236,17 +236,17 @@ public class BlockListener implements Listener {
     public void onBlockDecay(LeavesDecayEvent event) {
 
         //check world
-        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlModule.INSTANCE.config.world))
+        if(!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(WorldControlPlugin.INST.config.world))
             return;
 
-        if(LogSaver.INSTANCE.isBlocked() || !WorldControlModule.INSTANCE.allowPhysics) {
+        if(LogSaver.INSTANCE.isBlocked() || !WorldControlPlugin.INST.allowPhysics) {
             event.setCancelled(true);
             return;
         }
 
         //check if location is region
         String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if(region != null && !region.startsWith(WorldControlModule.INSTANCE.config.farmPrefix)) {
+        if(region != null && !region.startsWith(WorldControlPlugin.INST.config.farmPrefix)) {
             return;
         }
 
