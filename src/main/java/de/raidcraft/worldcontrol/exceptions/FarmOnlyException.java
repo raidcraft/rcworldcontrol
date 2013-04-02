@@ -5,7 +5,8 @@ package de.raidcraft.worldcontrol.exceptions;
  */
 public class FarmOnlyException extends Throwable {
 
-	public FarmOnlyException() {
-		super("Dieser Block lässt sich nur in Farmen nutzen!");
-	}
+    public FarmOnlyException() {
+
+        super("Dieser Block lässt sich nur in Farmen nutzen!");
+    }
 }

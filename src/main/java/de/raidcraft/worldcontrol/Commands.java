@@ -4,6 +4,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
+import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +20,7 @@ import java.util.List;
 public class Commands {
 
     public Commands(WorldControlPlugin module) {
+
     }
 
     @Command(
@@ -31,10 +33,12 @@ public class Commands {
     }
 
     public static class NestedCommands {
+
         private List<String> completeRegeneration = new ArrayList<>();
         private final WorldControlPlugin module;
 
         public NestedCommands(WorldControlPlugin module) {
+
             this.module = module;
         }
 
@@ -58,29 +62,29 @@ public class Commands {
         @CommandPermissions("worldcontrol.regenerate")
         public void regenerate(CommandContext context, CommandSender sender) {
 
-            if(context.argsLength() == 0) {
+            if (context.argsLength() == 0) {
                 sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wurde gestartet! " + ChatColor.DARK_RED + "(Lags möglich)");
                 WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
                 Regeneration.INSTANCE.regenerateBlocks();
                 return;
             }
 
-            if(context.getString(0).equalsIgnoreCase("all")) {
+            if (context.getString(0).equalsIgnoreCase("all")) {
                 sender.sendMessage(ChatColor.GOLD + "Komplettregenerierung bestätigen mit: " + ChatColor.DARK_RED + "/wc regenerate confirm");
-                if(!completeRegeneration.contains(sender.getName())) {
+                if (!completeRegeneration.contains(sender.getName())) {
                     completeRegeneration.add(sender.getName());
                 }
                 return;
             }
 
-            if(context.getString(0).equalsIgnoreCase("confirm")) {
-                if(!completeRegeneration.contains(sender.getName())) {
+            if (context.getString(0).equalsIgnoreCase("confirm")) {
+                if (!completeRegeneration.contains(sender.getName())) {
                     sender.sendMessage(ChatColor.DARK_RED + "Keine Aktion zum bestätigen gefunden!");
                     return;
                 }
                 completeRegeneration.remove(sender.getName());
 
-                if(!Regeneration.INSTANCE.canRegenerate()) {
+                if (!Regeneration.INSTANCE.canRegenerate()) {
                     sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
                     return;
                 }
@@ -89,11 +93,10 @@ public class Commands {
                 Regeneration.INSTANCE.regenerateBlocks(true);
             }
 
-            if(context.getString(0).equalsIgnoreCase("info")) {
-                if(!Regeneration.INSTANCE.canRegenerate()) {
+            if (context.getString(0).equalsIgnoreCase("info")) {
+                if (!Regeneration.INSTANCE.canRegenerate()) {
                     sender.sendMessage(ChatColor.DARK_RED + "Es wird zurzeit eine Regenierung durchgeführt!");
-                }
-                else {
+                } else {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Es findet derzeit keine Regenerierung statt!");
                 }
             }
@@ -105,14 +108,15 @@ public class Commands {
         )
         @CommandPermissions("worldcontrol.regenerate")
         public void physics(CommandContext context, CommandSender sender) {
-            if(context.getString(0).equalsIgnoreCase("on")) {
-                WorldControlPlugin.INST.allowPhysics = true;
+
+            if (context.getString(0).equalsIgnoreCase("on")) {
+                RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics = true;
                 sender.sendMessage(ChatColor.DARK_GREEN + "Blockphysik eingeschaltet!");
                 return;
             }
 
-            if(context.getString(0).equalsIgnoreCase("off")) {
-                WorldControlPlugin.INST.allowPhysics = false;
+            if (context.getString(0).equalsIgnoreCase("off")) {
+                RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics = false;
                 sender.sendMessage(ChatColor.DARK_GREEN + "Blockphysik ausgeschaltet!");
                 return;
             }

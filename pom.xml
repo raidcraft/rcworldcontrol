@@ -21,7 +21,7 @@
     <groupId>de.raidcraft</groupId>
     <artifactId>worldcontrol</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <name>WorldControl</name>
 
     <repositories>
@@ -31,14 +31,10 @@
         </repository>
     </repositories>
 
-    <scm>
-        <developerConnection>scm:git:ssh://git@raid-craft.org/raidcraft/worldcontrol.git</developerConnection>
-    </scm>
-
     <parent>
         <groupId>de.raidcraft</groupId>
         <artifactId>masterpom</artifactId>
-        <version>2.6-SNAPSHOT</version>
+        <version>2.4</version>
     </parent>
 
     <dependencies>

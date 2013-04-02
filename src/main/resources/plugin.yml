@@ -1,7 +1,6 @@
-main: de.raidcraft.worldcontrol.WorldControlPlugin
 name: WorldControl
+main: de.raidcraft.worldcontrol.WorldControlPlugin
 version: ${project.version}#${build.number}
-description: World regeneration.
 author: Strasse36
-website: http://www.raid-craft.de
+website: www.raid-craft.de
 depend: [RaidCraft-API]

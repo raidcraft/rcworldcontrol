@@ -5,7 +5,8 @@ package de.raidcraft.worldcontrol.exceptions;
  */
 public class NoItemDropException extends Throwable {
 
-	public NoItemDropException() {
-		super("Dieser Block dropt hier kein Item!");
-	}
+    public NoItemDropException() {
+
+        super("Dieser Block dropt hier kein Item!");
+    }
 }

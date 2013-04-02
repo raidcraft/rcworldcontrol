@@ -5,7 +5,8 @@ package de.raidcraft.worldcontrol.exceptions;
  */
 public class NotDeepEnoughException extends Throwable {
 
-	public NotDeepEnoughException() {
-		super("Dieser Block kann nur weiter unten gesetzt werden!");
-	}
+    public NotDeepEnoughException() {
+
+        super("Dieser Block kann nur weiter unten gesetzt werden!");
+    }
 }

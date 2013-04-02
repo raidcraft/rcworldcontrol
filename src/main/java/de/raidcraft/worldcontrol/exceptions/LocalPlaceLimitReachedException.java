@@ -5,7 +5,8 @@ package de.raidcraft.worldcontrol.exceptions;
  */
 public class LocalPlaceLimitReachedException extends Throwable {
 
-	public LocalPlaceLimitReachedException() {
-		super("Dieser Block wurde hier in der Gegend schon zu oft gesetzt!");
-	}
+    public LocalPlaceLimitReachedException() {
+
+        super("Dieser Block wurde hier in der Gegend schon zu oft gesetzt!");
+    }
 }

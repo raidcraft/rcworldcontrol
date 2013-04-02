@@ -17,14 +17,16 @@ import java.util.List;
 public class AllowedItemsTable extends Table {
 
     public AllowedItemsTable() {
+
         super("allowed_items", "worldcontrol_");
     }
 
     @Override
     public void createTable() {
+
         try {
             getConnection().prepareStatement(
-"CREATE TABLE `" + getTableName() + "` (" +
+                    "CREATE TABLE `" + getTableName() + "` (" +
                             "`id` INT NOT NULL AUTO_INCREMENT, " +
                             "`material` VARCHAR( 32 ) NOT NULL, " +
                             "`break` TINYINT( 1 ) NOT NULL, " +
@@ -38,10 +40,12 @@ public class AllowedItemsTable extends Table {
                             ")").execute();
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public List<AllowedItem> getAllowedItems() {
+
         List<AllowedItem> allowedItems = new ArrayList<>();
         try {
             ResultSet resultSet = getConnection().prepareStatement(
@@ -59,8 +63,9 @@ public class AllowedItemsTable extends Table {
                         resultSet.getBoolean("farm_only")
                 ));
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
+            RaidCraft.LOGGER.warning(e.getMessage());
+            e.printStackTrace();
         }
         return allowedItems;
     }

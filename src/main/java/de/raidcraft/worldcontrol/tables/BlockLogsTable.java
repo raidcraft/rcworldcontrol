@@ -21,17 +21,19 @@ import java.util.List;
  * Description:
  */
 public class BlockLogsTable extends Table {
-    
+
     private String selectNewestQuery = "SELECT id, player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM " +
             "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
             "ORDER BY timestamp) AS t1 GROUP BY world, x, y, z";
-    
+
     public BlockLogsTable() {
+
         super("block_logs", "worldcontrol_");
     }
 
     @Override
     public void createTable() {
+
         try {
             getConnection().prepareStatement(
                     "CREATE TABLE `" + getTableName() + "` (" +
@@ -54,6 +56,7 @@ public class BlockLogsTable extends Table {
     }
 
     public void addLog(BlockLog log) {
+
         try {
             // insert only if no entry exists for coordinate
             ResultSet resultSet = getConnection().prepareStatement(
@@ -88,35 +91,7 @@ public class BlockLogsTable extends Table {
     }
 
     public List<BlockLog> getAllOldestLogs() {
-        List<BlockLog> blockLogs = new ArrayList<>();
-        try {
-            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
 
-            while (resultSet.next()) {
-                blockLogs.add(new BlockLog(
-                        resultSet.getInt("id"),
-                        resultSet.getString("player"),
-                        new Location(
-                            Bukkit.getWorld(resultSet.getString("world")),
-                            resultSet.getDouble("x"),
-                            resultSet.getDouble("y"),
-                            resultSet.getDouble("z")
-                        ),
-                        Material.getMaterial(resultSet.getString("before_material")),
-                        resultSet.getShort("before_data"),
-                        Material.getMaterial(resultSet.getString("after_material")),
-                        resultSet.getShort("after_data"),
-                        resultSet.getString("time")
-                ));
-            }
-        }
-        catch (SQLException e) {
-            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
-        }
-        return blockLogs;
-    }
-
-    public List<BlockLog> getAllLogs() {
         List<BlockLog> blockLogs = new ArrayList<>();
         try {
             ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
@@ -138,14 +113,43 @@ public class BlockLogsTable extends Table {
                         resultSet.getString("time")
                 ));
             }
+        } catch (SQLException e) {
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
-        catch (SQLException e) {
+        return blockLogs;
+    }
+
+    public List<BlockLog> getAllLogs() {
+
+        List<BlockLog> blockLogs = new ArrayList<>();
+        try {
+            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
+
+            while (resultSet.next()) {
+                blockLogs.add(new BlockLog(
+                        resultSet.getInt("id"),
+                        resultSet.getString("player"),
+                        new Location(
+                                Bukkit.getWorld(resultSet.getString("world")),
+                                resultSet.getDouble("x"),
+                                resultSet.getDouble("y"),
+                                resultSet.getDouble("z")
+                        ),
+                        Material.getMaterial(resultSet.getString("before_material")),
+                        resultSet.getShort("before_data"),
+                        Material.getMaterial(resultSet.getString("after_material")),
+                        resultSet.getShort("after_data"),
+                        resultSet.getString("time")
+                ));
+            }
+        } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
         return blockLogs;
     }
 
     public boolean isNearBlockPlaced(Block block, AllowedItem item) {
+
         try {
             ResultSet resultSet = getConnection().prepareStatement(
                     "SELECT * FROM " + getTableName()
@@ -160,14 +164,14 @@ public class BlockLogsTable extends Table {
             while (resultSet.next()) {
                 return true;
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
         return false;
     }
 
     public void deleteLog(int id) {
+
         try {
             getConnection().prepareStatement(
                     "DELETE FROM " + getTableName() + " WHERE id =  '" + id + "'"
@@ -178,6 +182,7 @@ public class BlockLogsTable extends Table {
     }
 
     public void deleteAll() {
+
         try {
             getConnection().prepareStatement(
                     "DELETE FROM " + getTableName()
@@ -205,14 +210,14 @@ public class BlockLogsTable extends Table {
     }
 
     // !!!this hardcore query crash the mysql service!!!
-//    public void cleanTable() {
-//        try {
-//            getConnection().prepareStatement(
-//                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +
-//                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
-//                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
-//        } catch (SQLException e) {
-//            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
-//        }
-//    }
+    //    public void cleanTable() {
+    //        try {
+    //            getConnection().prepareStatement(
+    //                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +
+    //                            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
+    //                            "ORDER BY timestamp DESC) AS t1 GROUP BY world, x, y, z)").executeUpdate();
+    //        } catch (SQLException e) {
+    //            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+    //        }
+    //    }
 }
