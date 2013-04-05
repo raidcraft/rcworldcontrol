@@ -1,7 +1,9 @@
 package de.raidcraft.worldcontrol;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import de.raidcraft.RaidCraft;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -12,7 +14,7 @@ import org.bukkit.Location;
  */
 public class WorldGuardManager {
 
-    public final static WorldGuardManager INSTANCE = new WorldGuardManager();
+    public final static WorldGuardManager INST = new WorldGuardManager();
     private WorldGuardPlugin worldGuard;
 
     public WorldGuardManager() {
@@ -26,6 +28,33 @@ public class WorldGuardManager {
             return region.getId();
         }
         return null;
+    }
+
+    public boolean isInUnknownRegion(Location location) {
+
+        ApplicableRegionSet regions = worldGuard.getRegionManager(location.getWorld()).getApplicableRegions(location);
+        if(regions.size() == 0) {
+            return false;
+        }
+        for (ProtectedRegion region : regions) {
+            if(region.getId().startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isFarm(Location location) {
+        ApplicableRegionSet regions = worldGuard.getRegionManager(location.getWorld()).getApplicableRegions(location);
+        if(regions.size() == 0) {
+            return false;
+        }
+        for (ProtectedRegion region : regions) {
+            if(region.getId().startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

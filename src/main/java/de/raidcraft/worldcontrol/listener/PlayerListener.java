@@ -26,8 +26,7 @@ public class PlayerListener implements Listener {
             return;
 
         //check if location is region
-        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getPlayer().getLocation());
-        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getPlayer().getLocation())) {
             return;
         }
 

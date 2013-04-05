@@ -49,8 +49,7 @@ public class BlockListener implements Listener {
         }
 
         //check if location is region
-        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
         }
 
@@ -63,7 +62,7 @@ public class BlockListener implements Listener {
             }
 
             // check if farm only
-            if (region == null && allowedItem.isFarmOnly()) {
+            if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
                 throw new FarmOnlyException();
             }
 
@@ -112,8 +111,7 @@ public class BlockListener implements Listener {
         }
 
         //check if location is region
-        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
         }
 
@@ -126,7 +124,7 @@ public class BlockListener implements Listener {
             }
 
             // check if farm only
-            if (region == null && allowedItem.isFarmOnly()) {
+            if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
                 throw new FarmOnlyException();
             }
 
@@ -166,8 +164,7 @@ public class BlockListener implements Listener {
         }
 
         //check if location is region
-        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
         }
 
@@ -190,8 +187,7 @@ public class BlockListener implements Listener {
         }
 
         //check if location is region
-        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getLocation());
-        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getLocation())) {
             return;
         }
 
@@ -216,8 +212,7 @@ public class BlockListener implements Listener {
         }
 
         //check if location is region
-        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
         }
 
@@ -240,8 +235,7 @@ public class BlockListener implements Listener {
         }
 
         //check if location is region
-        String region = WorldGuardManager.INSTANCE.getLocatedRegion(event.getBlock().getLocation());
-        if (region != null && !region.startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
         }
 
