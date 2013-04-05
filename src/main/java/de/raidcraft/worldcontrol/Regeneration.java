@@ -135,7 +135,7 @@ public class Regeneration {
 
         WCLogger.info("Collect blocks for regeneration...");
 
-        RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().scheduleAsyncDelayedTask(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
+        RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().runTaskAsynchronously(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
             public void run() {
 
                 restored = 0;
@@ -152,7 +152,7 @@ public class Regeneration {
                         continue;
                     }
                     AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItems().get(log.getBlockBeforeMaterial());
-                    if (allowedItem == null) {
+                    if (allowedItem == null && !regenerateAll) {
                         continue;
                     }
                     double rnd = Math.random() * (RaidCraft.getComponent(WorldControlPlugin.class).config.timeFactor / 100);
@@ -166,7 +166,7 @@ public class Regeneration {
                 regenerationRunning = false;
                 regenerateAll = false;
             }
-        }, 0);
+        });
     }
 
     private void regenerateRecursive(Location blockLocation) {
