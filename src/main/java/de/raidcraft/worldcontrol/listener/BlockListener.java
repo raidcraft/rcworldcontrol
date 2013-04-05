@@ -1,17 +1,10 @@
 package de.raidcraft.worldcontrol.listener;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.worldcontrol.AllowedItem;
-import de.raidcraft.worldcontrol.BlockLog;
-import de.raidcraft.worldcontrol.LogSaver;
-import de.raidcraft.worldcontrol.WorldControlPlugin;
-import de.raidcraft.worldcontrol.WorldGuardManager;
-import de.raidcraft.worldcontrol.exceptions.FarmOnlyException;
-import de.raidcraft.worldcontrol.exceptions.LocalPlaceLimitReachedException;
-import de.raidcraft.worldcontrol.exceptions.NoItemDropException;
-import de.raidcraft.worldcontrol.exceptions.NotAllowedItemException;
-import de.raidcraft.worldcontrol.exceptions.NotDeepEnoughException;
+import de.raidcraft.worldcontrol.*;
+import de.raidcraft.worldcontrol.exceptions.*;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -42,7 +35,7 @@ public class BlockListener implements Listener {
         // mark block as player placed
         RaidCraft.setPlayerPlacedBlock(event.getBlock());
 
-        if (event.getPlayer().hasPermission("worldcontrol.build"))
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
         //check world
