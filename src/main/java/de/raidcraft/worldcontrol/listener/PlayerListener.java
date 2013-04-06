@@ -2,7 +2,7 @@ package de.raidcraft.worldcontrol.listener;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
-import de.raidcraft.worldcontrol.WorldGuardManager;
+import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -1,10 +1,12 @@
-package de.raidcraft.worldcontrol;
+package de.raidcraft.worldcontrol.commands;
 
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.worldcontrol.Regeneration;
+import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -57,12 +59,13 @@ public class Commands {
 
         @Command(
                 aliases = {"regenerate", "regen", "reg"},
-                desc = "Force a regeneration."
+                desc = "Force a regeneration.",
+                min = 1
         )
         @CommandPermissions("worldcontrol.regenerate")
         public void regenerate(CommandContext context, CommandSender sender) {
 
-            if (context.argsLength() == 0) {
+            if (context.getString(0).equalsIgnoreCase("default")) {
                 sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wurde gestartet! " + ChatColor.DARK_RED + "(Lags möglich)");
                 WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
                 Regeneration.INSTANCE.regenerateBlocks();
@@ -91,6 +94,7 @@ public class Commands {
 
                 sender.sendMessage(ChatColor.DARK_GREEN + "Komplettregenerierung wird durchgeführt!");
                 Regeneration.INSTANCE.regenerateBlocks(true);
+                return;
             }
 
             if (context.getString(0).equalsIgnoreCase("info")) {
@@ -99,7 +103,11 @@ public class Commands {
                 } else {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Es findet derzeit keine Regenerierung statt!");
                 }
+                return;
             }
+
+            int radius = context.getInteger(0);
+            //TODO radius regeneration
         }
 
         @Command(

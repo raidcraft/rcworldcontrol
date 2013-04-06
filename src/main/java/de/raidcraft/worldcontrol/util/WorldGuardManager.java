@@ -1,9 +1,10 @@
-package de.raidcraft.worldcontrol;
+package de.raidcraft.worldcontrol.util;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.raidcraft.RaidCraft;
+import de.raidcraft.worldcontrol.WorldControlPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
