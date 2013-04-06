@@ -59,6 +59,7 @@ public class WorldControlPlugin extends BasePlugin {
 
         getLogger().info("[WC] Saving block changes...");
         LogSaver.INSTANCE.save();
+        RaidCraft.getTable(BlockLogsTable.class).cleanTable();
     }
 
 
