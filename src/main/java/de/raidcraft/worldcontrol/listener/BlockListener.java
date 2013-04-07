@@ -101,7 +101,7 @@ public class BlockListener implements Listener {
     )
     public void onBlockBreak(BlockBreakEvent event) {
 
-        if (event.getPlayer().hasPermission("worldcontrol.build"))
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
         //check world
