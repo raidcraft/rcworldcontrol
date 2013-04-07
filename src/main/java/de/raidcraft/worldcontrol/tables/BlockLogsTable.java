@@ -2,9 +2,9 @@ package de.raidcraft.worldcontrol.tables;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.database.Table;
-import de.raidcraft.worldcontrol.AllowedItem;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
+import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -181,6 +181,22 @@ public class BlockLogsTable extends Table {
         }
     }
 
+    public void deleteLog(Location location, AllowedItem item) {
+
+        try {
+            getConnection().prepareStatement(
+                    "DELETE FROM " + getTableName() + " WHERE " +
+                            "x = '" + location.getX() + "' " +
+                            "AND y = '" + location.getY() + "' " +
+                            "AND z = '" + location.getY() + "' " +
+                            "AND before_material = 'AIR' " +
+                            "AND after_material = '" + item.getMaterial().name() + "'"
+            ).execute();
+        } catch (SQLException e) {
+            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+        }
+    }
+
     public void deleteAll() {
 
         try {
@@ -192,9 +208,9 @@ public class BlockLogsTable extends Table {
         }
     }
 
-    public void cleanTable() {
+    public void otimizeTable() {
 
-        LogSaver.INSTANCE.setBlocked(true);
+        LogSaver.INST.setBlocked(true);
 
         try {
             getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `" + getTableName() + "_temp` LIKE " + getTableName()).execute();
@@ -206,11 +222,11 @@ public class BlockLogsTable extends Table {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
 
-        LogSaver.INSTANCE.setBlocked(false);
+        LogSaver.INST.setBlocked(false);
     }
 
     // !!!this hardcore query crash the mysql service!!!
-    //    public void cleanTable() {
+    //    public void otimizeTable() {
     //        try {
     //            getConnection().prepareStatement(
     //                    "DELETE FROM `" + getTableName() + "` WHERE id NOT IN (SELECT id FROM " +

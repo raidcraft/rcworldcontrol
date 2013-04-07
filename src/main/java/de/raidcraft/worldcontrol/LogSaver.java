@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class LogSaver {
 
-    public final static LogSaver INSTANCE = new LogSaver();
+    public final static LogSaver INST = new LogSaver();
 
     private List<BlockLog> logs = new ArrayList<>();
     private List<BlockLog> savingLogs = new ArrayList<>();

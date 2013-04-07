@@ -1,11 +1,16 @@
 package de.raidcraft.worldcontrol.listener;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.worldcontrol.AllowedItem;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
-import de.raidcraft.worldcontrol.exceptions.*;
+import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
+import de.raidcraft.worldcontrol.alloweditem.AllowedItemManager;
+import de.raidcraft.worldcontrol.exceptions.FarmOnlyException;
+import de.raidcraft.worldcontrol.exceptions.LocalPlaceLimitReachedException;
+import de.raidcraft.worldcontrol.exceptions.NotAllowedItemException;
+import de.raidcraft.worldcontrol.exceptions.NotDeepEnoughException;
+import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -46,7 +51,7 @@ public class BlockListener implements Listener {
         if (!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
 
-        if (LogSaver.INSTANCE.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
+        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
             return;
@@ -58,7 +63,7 @@ public class BlockListener implements Listener {
         }
 
         try {
-            AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItem(event.getBlock());
+            AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
 
             // check if can placed
             if (!allowedItem.canBlockPlace()) {
@@ -76,11 +81,11 @@ public class BlockListener implements Listener {
             }
 
             // check local place limit
-            if (RaidCraft.getComponent(WorldControlPlugin.class).isNearBlockPlaced(event.getBlock(), allowedItem)) {
+            if (AllowedItemManager.INST.isNearBlockPlaced(event.getBlock(), allowedItem)) {
                 throw new LocalPlaceLimitReachedException();
             }
 
-            LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
+            LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
             return;
         } catch (NotAllowedItemException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht setzen!");
@@ -108,7 +113,7 @@ public class BlockListener implements Listener {
         if (!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
 
-        if (LogSaver.INSTANCE.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
+        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
             return;
@@ -120,7 +125,7 @@ public class BlockListener implements Listener {
         }
 
         try {
-            AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItem(event.getBlock());
+            AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
 
             // check if can placed
             if (!allowedItem.canBlockBreak()) {
@@ -132,18 +137,18 @@ public class BlockListener implements Listener {
                 throw new FarmOnlyException();
             }
 
-            LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
+            LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
             if (!allowedItem.canDropItem()) {
                 event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
-                throw new NoItemDropException();
+                event.setCancelled(true);
             }
+            // remove log
+            RaidCraft.getTable(BlockLogsTable.class).deleteLog(event.getBlock().getLocation(), allowedItem);
             return;
         } catch (NotAllowedItemException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht abbauen!");
         } catch (FarmOnlyException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen abbauen!");
-        } catch (NoItemDropException e) {
-            // no message
         }
 
         event.setCancelled(true);
@@ -158,7 +163,7 @@ public class BlockListener implements Listener {
         if (!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
 
-        if (LogSaver.INSTANCE.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
+        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             event.setCancelled(true);
             return;
         }
@@ -172,7 +177,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INSTANCE.addBlockLog(new BlockLog("Physics", event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INST.addBlockLog(new BlockLog("Physics", event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     @EventHandler(
@@ -185,7 +190,7 @@ public class BlockListener implements Listener {
         if (!event.getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
 
-        if (LogSaver.INSTANCE.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
+        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             event.setCancelled(true);
             return;
         }
@@ -196,7 +201,7 @@ public class BlockListener implements Listener {
         }
 
         for (Block block : event.blockList()) {
-            LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getEntityType().getName(), block.getLocation(), block, null));
+            LogSaver.INST.addBlockLog(new BlockLog(event.getEntityType().getName(), block.getLocation(), block, null));
         }
     }
 
@@ -210,7 +215,7 @@ public class BlockListener implements Listener {
         if (!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
 
-        if (LogSaver.INSTANCE.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
+        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             event.setCancelled(true);
             return;
         }
@@ -220,7 +225,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INSTANCE.addBlockLog(new BlockLog(event.getEntity().getType().getName(), event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INST.addBlockLog(new BlockLog(event.getEntity().getType().getName(), event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     @EventHandler(
@@ -233,7 +238,7 @@ public class BlockListener implements Listener {
         if (!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
 
-        if (LogSaver.INSTANCE.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
+        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             event.setCancelled(true);
             return;
         }
@@ -243,7 +248,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INSTANCE.addBlockLog(new BlockLog("Leaves", event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INST.addBlockLog(new BlockLog("Leaves", event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     private void sendInteractSuppressWarning(Player player) {

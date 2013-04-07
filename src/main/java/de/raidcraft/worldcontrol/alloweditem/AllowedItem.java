@@ -1,4 +1,4 @@
-package de.raidcraft.worldcontrol;
+package de.raidcraft.worldcontrol.alloweditem;
 
 import org.bukkit.Material;
 

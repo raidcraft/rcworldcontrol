@@ -2,7 +2,7 @@ package de.raidcraft.worldcontrol.tables;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.database.Table;
-import de.raidcraft.worldcontrol.AllowedItem;
+import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

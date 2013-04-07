@@ -2,6 +2,8 @@ package de.raidcraft.worldcontrol;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.util.DateUtil;
+import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
+import de.raidcraft.worldcontrol.alloweditem.AllowedItemManager;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Bukkit;
@@ -43,7 +45,7 @@ public class Regeneration {
                 }
 
                 WCLogger.info("Regenerate " + blocksToRestore.size() + " blocks...");
-                LogSaver.INSTANCE.setBlocked(true);
+                LogSaver.INST.setBlocked(true);
                 for (BlockLog log : blocksToRestore) {
                     regenerateBlockLog(log);
                 }
@@ -51,7 +53,7 @@ public class Regeneration {
                 RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().scheduleSyncDelayedTask(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
                     public void run() {
 
-                        LogSaver.INSTANCE.setBlocked(false);
+                        LogSaver.INST.setBlocked(false);
                     }
                 }, 5 * 20);
                 WCLogger.info("Regeneration finished!");
@@ -130,7 +132,7 @@ public class Regeneration {
         stopRestoreTask();
 
         //        WCLogger.info("Clean log table...");
-        RaidCraft.getTable(BlockLogsTable.class).cleanTable();
+        RaidCraft.getTable(BlockLogsTable.class).otimizeTable();
         //        WCLogger.info("Finished table cleanup!");
 
         WCLogger.info("Collect blocks for regeneration...");
@@ -151,7 +153,7 @@ public class Regeneration {
                     if (log == null) {
                         continue;
                     }
-                    AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItems().get(log.getBlockBeforeMaterial());
+                    AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockBeforeMaterial());
                     if (allowedItem == null && !regenerateAll) {
                         continue;
                     }
