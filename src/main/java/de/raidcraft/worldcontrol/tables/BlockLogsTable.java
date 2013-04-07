@@ -186,7 +186,8 @@ public class BlockLogsTable extends Table {
         try {
             getConnection().prepareStatement(
                     "DELETE FROM " + getTableName() + " WHERE " +
-                            "x = '" + location.getX() + "' " +
+                            "world = '" + location.getWorld().getName() + "' " +
+                            "AND x = '" + location.getY() + "' " +
                             "AND y = '" + location.getY() + "' " +
                             "AND z = '" + location.getY() + "' " +
                             "AND before_material = 'AIR' " +
