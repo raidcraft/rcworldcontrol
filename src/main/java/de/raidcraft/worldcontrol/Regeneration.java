@@ -28,6 +28,7 @@ public class Regeneration {
 
     private boolean regenerationRunning = false;
     private boolean regenerateAll = false;
+    private String regenerationWorld;
     private int restored = 0;
     private Map<Location, BlockLog> allSavedLogs = new HashMap<>();
     private List<BlockLog> blocksToRestore = new ArrayList<>();
@@ -59,7 +60,7 @@ public class Regeneration {
                 WCLogger.info("Regeneration finished!");
                 WCLogger.info("Start database cleanup...");
 
-                RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().scheduleAsyncDelayedTask(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
+                RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().runTaskAsynchronously(RaidCraft.getComponent(WorldControlPlugin.class), new Runnable() {
                     public void run() {
 
                         BlockLogsTable table = RaidCraft.getTable(BlockLogsTable.class);
@@ -101,7 +102,7 @@ public class Regeneration {
                         }
 
                     }
-                }, 0);
+                });
 
                 stopRestoreTask();
             }
@@ -113,20 +114,21 @@ public class Regeneration {
         RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().cancelTask(restoreTaskId);
     }
 
-    public void regenerateBlocks(boolean all) {
+    public void regenerateBlocks(String world, boolean all) {
 
         if (all) {
             regenerateAll = true;
         }
-        regenerateBlocks();
+        regenerateBlocks(world);
     }
 
-    public void regenerateBlocks() {
+    public void regenerateBlocks(String world) {
 
         if (!canRegenerate()) {
             return;
         }
 
+        regenerationWorld = world;
         regenerationRunning = true;
         allSavedLogs.clear();
         stopRestoreTask();
@@ -142,7 +144,7 @@ public class Regeneration {
 
                 restored = 0;
 
-                List<BlockLog> allLogs = RaidCraft.getTable(BlockLogsTable.class).getAllLogs();
+                List<BlockLog> allLogs = RaidCraft.getTable(BlockLogsTable.class).getAllLogs(regenerationWorld);
                 for (BlockLog log : allLogs) {
                     allSavedLogs.put(log.getLocation(), log);
                 }

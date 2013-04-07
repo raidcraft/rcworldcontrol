@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,6 +26,10 @@ public class BlockLogsTable extends Table {
     private String selectNewestQuery = "SELECT id, player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM " +
             "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
             "ORDER BY timestamp) AS t1 GROUP BY world, x, y, z";
+
+    private String selectNewestFromWorldQuery = "SELECT id, player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM " +
+            "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
+            "WHERE world = ? ORDER BY timestamp) AS t1 GROUP BY world, x, y, z";
 
     public BlockLogsTable() {
 
@@ -90,40 +95,13 @@ public class BlockLogsTable extends Table {
         }
     }
 
-    public List<BlockLog> getAllOldestLogs() {
+    public List<BlockLog> getAllLogs(String world) {
 
         List<BlockLog> blockLogs = new ArrayList<>();
         try {
-            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
-
-            while (resultSet.next()) {
-                blockLogs.add(new BlockLog(
-                        resultSet.getInt("id"),
-                        resultSet.getString("player"),
-                        new Location(
-                                Bukkit.getWorld(resultSet.getString("world")),
-                                resultSet.getDouble("x"),
-                                resultSet.getDouble("y"),
-                                resultSet.getDouble("z")
-                        ),
-                        Material.getMaterial(resultSet.getString("before_material")),
-                        resultSet.getShort("before_data"),
-                        Material.getMaterial(resultSet.getString("after_material")),
-                        resultSet.getShort("after_data"),
-                        resultSet.getString("time")
-                ));
-            }
-        } catch (SQLException e) {
-            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
-        }
-        return blockLogs;
-    }
-
-    public List<BlockLog> getAllLogs() {
-
-        List<BlockLog> blockLogs = new ArrayList<>();
-        try {
-            ResultSet resultSet = getConnection().prepareStatement(selectNewestQuery).executeQuery();
+            PreparedStatement statement = getConnection().prepareStatement(selectNewestFromWorldQuery);
+            statement.setString(1, world);
+            ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 blockLogs.add(new BlockLog(

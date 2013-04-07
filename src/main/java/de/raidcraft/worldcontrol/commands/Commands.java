@@ -1,9 +1,6 @@
 package de.raidcraft.worldcontrol.commands;
 
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.NestedCommand;
+import com.sk89q.minecraft.util.commands.*;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.Regeneration;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
@@ -11,9 +8,6 @@ import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Author: Philip
@@ -37,7 +31,6 @@ public class Commands {
 
     public static class NestedCommands {
 
-        private List<String> completeRegeneration = new ArrayList<>();
         private final WorldControlPlugin module;
 
         public NestedCommands(WorldControlPlugin module) {
@@ -62,29 +55,22 @@ public class Commands {
                 min = 1
         )
         @CommandPermissions("worldcontrol.regenerate")
-        public void regenerate(CommandContext context, CommandSender sender) {
+        public void regenerate(CommandContext context, CommandSender sender) throws CommandException {
 
             if (context.getString(0).equalsIgnoreCase("default")) {
+                if(context.argsLength() < 2) {
+                    throw new CommandException("Keine Welt angegeben!");
+                }
                 sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wurde gestartet! " + ChatColor.DARK_RED + "(Lags möglich)");
                 WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
-                Regeneration.INSTANCE.regenerateBlocks();
+                Regeneration.INSTANCE.regenerateBlocks(context.getString(1));
                 return;
             }
 
             if (context.getString(0).equalsIgnoreCase("all")) {
-                sender.sendMessage(ChatColor.GOLD + "Komplettregenerierung bestätigen mit: " + ChatColor.DARK_RED + "/wc regenerate confirm");
-                if (!completeRegeneration.contains(sender.getName())) {
-                    completeRegeneration.add(sender.getName());
+                if(context.argsLength() < 2) {
+                    throw new CommandException("Keine Welt angegeben!");
                 }
-                return;
-            }
-
-            if (context.getString(0).equalsIgnoreCase("confirm")) {
-                if (!completeRegeneration.contains(sender.getName())) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Keine Aktion zum bestätigen gefunden!");
-                    return;
-                }
-                completeRegeneration.remove(sender.getName());
 
                 if (!Regeneration.INSTANCE.canRegenerate()) {
                     sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
@@ -92,7 +78,7 @@ public class Commands {
                 }
 
                 sender.sendMessage(ChatColor.DARK_GREEN + "Komplettregenerierung wird durchgeführt!");
-                Regeneration.INSTANCE.regenerateBlocks(true);
+                Regeneration.INSTANCE.regenerateBlocks(context.getString(1), true);
                 return;
             }
 
