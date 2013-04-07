@@ -51,9 +51,7 @@ public class Commands {
         @CommandPermissions("worldcontrol.reload")
         public void reload(CommandContext context, CommandSender sender) {
 
-            module.reload();
-            module.loadAllowedItems();
-            module.loadConfig();
+            RaidCraft.getComponent(WorldControlPlugin.class).reload();
             sender.sendMessage(ChatColor.DARK_GREEN + "WorldControl wurde neugeladen.");
         }
 

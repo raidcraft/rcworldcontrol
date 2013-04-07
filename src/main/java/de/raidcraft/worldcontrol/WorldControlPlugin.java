@@ -37,17 +37,15 @@ public class WorldControlPlugin extends BasePlugin {
         registerTable(AllowedItemsTable.class, new AllowedItemsTable());
         registerTable(BlockLogsTable.class, new BlockLogsTable());
 
-        loadConfig();
-
         registerEvents(new BlockListener());
         registerEvents(new PlayerListener());
 
         registerCommands(Commands.class);
-        loadAllowedItems();
+        reload();
         //TODO ACTIVATE
         //Regeneration.INSTANCE.regenerateBlocks();
 
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             public void run() {
 
                 LogSaver.INSTANCE.save();
@@ -56,17 +54,18 @@ public class WorldControlPlugin extends BasePlugin {
     }
 
     @Override
+    public void reload() {
+
+        config = configure(new LocalConfiguration(this));
+        loadAllowedItems();
+    }
+
+    @Override
     public void disable() {
 
         getLogger().info("[WC] Saving block changes...");
         LogSaver.INSTANCE.save();
         RaidCraft.getTable(BlockLogsTable.class).cleanTable();
-    }
-
-
-    public void loadConfig() {
-
-        config = configure(new LocalConfiguration(this));
     }
 
     public void loadAllowedItems() {
