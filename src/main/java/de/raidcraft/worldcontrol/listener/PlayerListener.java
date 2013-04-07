@@ -4,6 +4,7 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -18,7 +19,7 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerEmptyBucket(PlayerBucketEmptyEvent event) {
 
-        if (event.getPlayer().hasPermission("worldcontrol.build"))
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
         //check world
