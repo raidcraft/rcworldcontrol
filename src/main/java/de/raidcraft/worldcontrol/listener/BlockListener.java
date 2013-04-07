@@ -10,7 +10,6 @@ import de.raidcraft.worldcontrol.exceptions.FarmOnlyException;
 import de.raidcraft.worldcontrol.exceptions.LocalPlaceLimitReachedException;
 import de.raidcraft.worldcontrol.exceptions.NotAllowedItemException;
 import de.raidcraft.worldcontrol.exceptions.NotDeepEnoughException;
-import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -143,7 +142,7 @@ public class BlockListener implements Listener {
                 event.setCancelled(true);
             }
             // remove log
-            RaidCraft.getTable(BlockLogsTable.class).deleteLog(event.getBlock().getLocation(), allowedItem);
+            LogSaver.INST.removeLog(event.getBlock().getLocation(), allowedItem);
             return;
         } catch (NotAllowedItemException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht abbauen!");

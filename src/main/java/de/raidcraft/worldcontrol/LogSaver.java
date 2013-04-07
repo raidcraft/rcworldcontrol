@@ -1,7 +1,9 @@
 package de.raidcraft.worldcontrol;
 
 import de.raidcraft.RaidCraft;
+import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
+import org.bukkit.Location;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -118,5 +120,19 @@ public class LogSaver {
     public boolean isBlocked() {
 
         return blocked;
+    }
+
+    public void removeLog(Location location, AllowedItem item) {
+
+        for (BlockLog currLog : logs) {
+            if (location.getBlockX() == currLog.getLocation().getBlockX()
+                    && location.getBlockY() == currLog.getLocation().getBlockY()
+                    && location.getBlockZ() == currLog.getLocation().getBlockZ()
+                    && item.getMaterial() == currLog.getBlockAfterMaterial()) {
+                logs.remove(currLog);
+                break;
+            }
+        }
+        RaidCraft.getTable(BlockLogsTable.class).deleteLog(location, item);
     }
 }

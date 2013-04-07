@@ -91,6 +91,10 @@ public class Commands {
                 return;
             }
 
+            if(sender instanceof CommandSender) {
+                throw new CommandException("Radius-Regenerationen können nur von Spielern durchgeführt werden!");
+            }
+
             int radius = context.getInteger(0);
             //TODO radius regeneration
         }
