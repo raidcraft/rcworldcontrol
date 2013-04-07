@@ -122,17 +122,23 @@ public class LogSaver {
         return blocked;
     }
 
-    public void removeLog(Location location, AllowedItem item) {
+    public boolean removeLog(Location location, AllowedItem item) {
 
+        boolean result = false;
         for (BlockLog currLog : logs) {
             if (location.getBlockX() == currLog.getLocation().getBlockX()
                     && location.getBlockY() == currLog.getLocation().getBlockY()
                     && location.getBlockZ() == currLog.getLocation().getBlockZ()
                     && item.getMaterial() == currLog.getBlockAfterMaterial()) {
                 logs.remove(currLog);
+                result = true;
                 break;
             }
         }
-        RaidCraft.getTable(BlockLogsTable.class).deleteLog(location, item);
+        if(RaidCraft.getTable(BlockLogsTable.class).deleteLog(location, item)) {
+            result = true;
+        }
+
+        return result;
     }
 }

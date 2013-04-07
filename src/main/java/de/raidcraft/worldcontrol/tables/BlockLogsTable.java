@@ -159,10 +159,11 @@ public class BlockLogsTable extends Table {
         }
     }
 
-    public void deleteLog(Location location, AllowedItem item) {
+    public boolean deleteLog(Location location, AllowedItem item) {
 
+        int res = 0;
         try {
-            getConnection().prepareStatement(
+            res = getConnection().prepareStatement(
                     "DELETE FROM " + getTableName() + " WHERE " +
                             "world = '" + location.getWorld().getName() + "' " +
                             "AND x = '" + location.getBlockX() + "' " +
@@ -170,10 +171,13 @@ public class BlockLogsTable extends Table {
                             "AND z = '" + location.getBlockZ()+ "' " +
                             "AND before_material = 'AIR' " +
                             "AND after_material = '" + item.getMaterial().name() + "'"
-            ).execute();
+            ).executeUpdate();
+
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
+
+        return (res == 0) ? false : true;
     }
 
     public void deleteAll() {

@@ -136,13 +136,14 @@ public class BlockListener implements Listener {
                 throw new FarmOnlyException();
             }
 
-            LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
             if (!allowedItem.canDropItem()) {
                 event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
                 event.setCancelled(true);
             }
             // remove log
-            LogSaver.INST.removeLog(event.getBlock().getLocation(), allowedItem);
+            if(!LogSaver.INST.removeLog(event.getBlock().getLocation(), allowedItem)) {
+                LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
+            }
             return;
         } catch (NotAllowedItemException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht abbauen!");
