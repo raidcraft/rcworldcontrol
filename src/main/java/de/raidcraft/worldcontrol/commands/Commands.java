@@ -7,6 +7,7 @@ import com.sk89q.minecraft.util.commands.NestedCommand;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.Regeneration;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
+import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -106,6 +107,17 @@ public class Commands {
 
             int radius = context.getInteger(0);
             //TODO radius regeneration
+        }
+
+        @Command(
+                aliases = {"optimize", "opti"},
+                desc = "Database optimization."
+        )
+        @CommandPermissions("worldcontrol.regenerate")
+        public void optimize(CommandContext context, CommandSender sender) {
+
+            RaidCraft.getTable(BlockLogsTable.class).otimizeTable();
+            sender.sendMessage(ChatColor.GREEN + " Die Datenbank wurde optimiert!");
         }
 
         @Command(
