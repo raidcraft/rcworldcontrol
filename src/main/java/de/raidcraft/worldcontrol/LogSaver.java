@@ -31,6 +31,11 @@ public class LogSaver {
         if (isBlocked()) {
             return;
         }
+
+        if(log.getBlockBeforeMaterial() == log.getBlockAfterMaterial() && log.getBlockBeforeData() == log.getBlockAfterData()) {
+            return;
+        }
+
         for (BlockLog currLog : logs) {
             if (log.getLocation().getBlockX() == currLog.getLocation().getBlockX()
                     && log.getLocation().getBlockY() == currLog.getLocation().getBlockY()
