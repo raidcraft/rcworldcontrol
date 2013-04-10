@@ -40,7 +40,7 @@ public class BlockLogsTable extends Table {
     public void createTable() {
 
         try {
-            getConnection().prepareStatement(
+            executeQuery(
                     "CREATE TABLE `" + getTableName() + "` (" +
                             "`id` INT NOT NULL AUTO_INCREMENT, " +
                             "`player` VARCHAR( 32 ) NOT NULL, " +
@@ -54,7 +54,7 @@ public class BlockLogsTable extends Table {
                             "`z` INT( 11 ) NOT NULL, " +
                             "`time` VARCHAR( 100 ) NOT NULL, " +
                             "PRIMARY KEY ( `id` )" +
-                            ")").execute();
+                            ")");
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
@@ -75,7 +75,7 @@ public class BlockLogsTable extends Table {
                 return;
             }
 
-            getConnection().prepareStatement(
+            executeUpdate(
                     "INSERT INTO " + getTableName() + " (player, before_material, before_data, after_material, after_data, world, x, y, z, time) " +
                             "VALUES (" +
                             "'" + log.getPlayer() + "'" + "," +
@@ -89,7 +89,7 @@ public class BlockLogsTable extends Table {
                             "'" + log.getLocation().getBlockZ() + "'" + "," +
                             "'" + log.getTime() + "'" +
                             ")"
-            ).execute();
+            );
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
@@ -129,7 +129,7 @@ public class BlockLogsTable extends Table {
     public boolean isNearBlockPlaced(Block block, AllowedItem item) {
 
         try {
-            ResultSet resultSet = getConnection().prepareStatement(
+            ResultSet resultSet = executeQuery(
                     "SELECT * FROM " + getTableName()
                             + " WHERE after_material = '" + item.getMaterial().name() + "'"
                             + " AND x > '" + (block.getLocation().getBlockX() - item.getLocalPlaceDistance()) + "'"
@@ -137,7 +137,7 @@ public class BlockLogsTable extends Table {
                             + " AND y > '" + (block.getLocation().getBlockY() - item.getLocalPlaceDistance()) + "'"
                             + " AND y < '" + (block.getLocation().getBlockY() + item.getLocalPlaceDistance()) + "'"
                             + " AND z > '" + (block.getLocation().getBlockZ() - item.getLocalPlaceDistance()) + "'"
-                            + " AND z < '" + (block.getLocation().getBlockZ() + item.getLocalPlaceDistance()) + "';").executeQuery();
+                            + " AND z < '" + (block.getLocation().getBlockZ() + item.getLocalPlaceDistance()) + "';");
 
             while (resultSet.next()) {
                 return true;
@@ -151,9 +151,9 @@ public class BlockLogsTable extends Table {
     public void deleteLog(int id) {
 
         try {
-            getConnection().prepareStatement(
+            executeUpdate(
                     "DELETE FROM " + getTableName() + " WHERE id =  '" + id + "'"
-            ).execute();
+            );
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
@@ -182,9 +182,9 @@ public class BlockLogsTable extends Table {
     public void deleteAll() {
 
         try {
-            getConnection().prepareStatement(
+            executeUpdate(
                     "DELETE FROM " + getTableName()
-            ).execute();
+            );
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
@@ -195,11 +195,11 @@ public class BlockLogsTable extends Table {
         LogSaver.INST.setBlocked(true);
 
         try {
-            getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `" + getTableName() + "_temp` LIKE " + getTableName()).execute();
-            getConnection().prepareStatement("INSERT INTO `" + getTableName() + "_temp` " + selectNewestQuery).execute();
-            getConnection().prepareStatement("TRUNCATE TABLE `" + getTableName() + "`").execute();
-            getConnection().prepareStatement("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`").execute();
-            getConnection().prepareStatement("DROP TABLE `" + getTableName() + "_temp`").execute();
+            executeUpdate("CREATE TABLE IF NOT EXISTS `" + getTableName() + "_temp` LIKE " + getTableName());
+            executeUpdate("INSERT INTO `" + getTableName() + "_temp` " + selectNewestQuery);
+            executeUpdate("TRUNCATE TABLE `" + getTableName() + "`");
+            executeUpdate("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`");
+            executeUpdate("DROP TABLE `" + getTableName() + "_temp`");
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }

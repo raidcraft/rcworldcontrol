@@ -48,8 +48,8 @@ public class AllowedItemsTable extends Table {
 
         List<AllowedItem> allowedItems = new ArrayList<>();
         try {
-            ResultSet resultSet = getConnection().prepareStatement(
-                    "SELECT * FROM " + getTableName() + ";").executeQuery();
+            ResultSet resultSet = executeQuery(
+                    "SELECT * FROM " + getTableName() + ";");
 
             while (resultSet.next()) {
                 allowedItems.add(new AllowedItem(
