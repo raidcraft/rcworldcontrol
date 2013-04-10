@@ -53,6 +53,6 @@ public class PlayerListener implements Listener {
         }
 
         event.setCancelled(true);
-        event.getPlayer().sendMessage(ChatColor.RED + "Du kannst hier dein Eimer nicht füllen!");
+        event.getPlayer().sendMessage(ChatColor.RED + "Du kannst hier deinen Eimer nicht füllen!");
     }
 }
