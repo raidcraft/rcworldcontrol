@@ -72,9 +72,10 @@ public class BlockLogsTable extends Table {
                             + " AND z = '" + log.getLocation().getBlockZ() + "'").executeQuery();
 
             while (resultSet.next()) {
+                resultSet.close();
                 return;
             }
-
+            resultSet.close();
             executeUpdate(
                     "INSERT INTO " + getTableName() + " (player, before_material, before_data, after_material, after_data, world, x, y, z, time) " +
                             "VALUES (" +
@@ -120,6 +121,8 @@ public class BlockLogsTable extends Table {
                         resultSet.getString("time")
                 ));
             }
+            statement.close();
+            resultSet.close();
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
@@ -140,8 +143,10 @@ public class BlockLogsTable extends Table {
                             + " AND z < '" + (block.getLocation().getBlockZ() + item.getLocalPlaceDistance()) + "';");
 
             while (resultSet.next()) {
+                resultSet.close();
                 return true;
             }
+            resultSet.close();
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
         }
@@ -171,7 +176,9 @@ public class BlockLogsTable extends Table {
                     "AND after_material = '" + item.getMaterial().name() + "'");
             statement.execute();
 
-            return (statement.getUpdateCount() == 0) ? false : true;
+            int updateCount = statement.getUpdateCount();
+            statement.close();
+            return (updateCount == 0) ? false : true;
 
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());

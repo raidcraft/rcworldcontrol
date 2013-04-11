@@ -63,6 +63,7 @@ public class AllowedItemsTable extends Table {
                         resultSet.getBoolean("farm_only")
                 ));
             }
+            resultSet.close();
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning(e.getMessage());
             e.printStackTrace();
