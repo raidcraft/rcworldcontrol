@@ -114,16 +114,14 @@ public class Regeneration {
         RaidCraft.getComponent(WorldControlPlugin.class).getServer().getScheduler().cancelTask(restoreTaskId);
     }
 
-    public void regenerateBlocks(String world, boolean all) {
-
-        if (all) {
-            regenerateAll = true;
-        }
-        regenerateBlocks(world);
-    }
-
     public void regenerateBlocks(String world) {
 
+        regenerateBlocks(world, false);
+    }
+
+    public void regenerateBlocks(String world, boolean all) {
+
+        regenerateAll = all;
         if (!canRegenerate()) {
             return;
         }
