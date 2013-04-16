@@ -63,7 +63,7 @@ public class Commands {
                 }
                 sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wurde gestartet! " + ChatColor.DARK_RED + "(Lags möglich)");
                 WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
-                Regeneration.INSTANCE.regenerateBlocks(context.getString(1));
+                Regeneration.INST.regenerateBlocks(context.getString(1));
                 return;
             }
 
@@ -72,18 +72,18 @@ public class Commands {
                     throw new CommandException("Keine Welt angegeben!");
                 }
 
-                if (!Regeneration.INSTANCE.canRegenerate()) {
+                if (!Regeneration.INST.canRegenerate()) {
                     sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
                     return;
                 }
 
                 sender.sendMessage(ChatColor.DARK_GREEN + "Komplettregenerierung wird durchgeführt!");
-                Regeneration.INSTANCE.regenerateBlocks(context.getString(1), true);
+                Regeneration.INST.regenerateBlocks(context.getString(1), true);
                 return;
             }
 
             if (context.getString(0).equalsIgnoreCase("info")) {
-                if (!Regeneration.INSTANCE.canRegenerate()) {
+                if (!Regeneration.INST.canRegenerate()) {
                     sender.sendMessage(ChatColor.DARK_RED + "Es wird zurzeit eine Regenierung durchgeführt!");
                 } else {
                     sender.sendMessage(ChatColor.DARK_GREEN + "Es findet derzeit keine Regenerierung statt!");

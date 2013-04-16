@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class Regeneration {
 
-    public final static Regeneration INSTANCE = new Regeneration();
+    public final static Regeneration INST = new Regeneration();
 
     private boolean regenerationRunning = false;
     private boolean regenerateAll = false;
