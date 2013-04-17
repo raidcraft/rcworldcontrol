@@ -8,6 +8,7 @@ import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -153,13 +154,28 @@ public class Regeneration {
                     if (log == null) {
                         continue;
                     }
-                    AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockBeforeMaterial());
+
+                    AllowedItem allowedItem;
+                    double rnd = Math.random() * (RaidCraft.getComponent(WorldControlPlugin.class).config.timeFactor / 100);
+
+                    // check breaked blocks
+                    allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockBeforeMaterial());
                     if (allowedItem == null && !regenerateAll) {
                         continue;
                     }
-                    double rnd = Math.random() * (RaidCraft.getComponent(WorldControlPlugin.class).config.timeFactor / 100);
                     if (regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
+                    }
+
+                    // check placed blocks
+                    if(log.getBlockBeforeMaterial() == Material.AIR) {
+                        allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockAfterMaterial());
+                        if (allowedItem == null && !regenerateAll) {
+                            continue;
+                        }
+                        if (regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
+                            regenerateRecursive(log.getLocation());
+                        }
                     }
                 }
 
