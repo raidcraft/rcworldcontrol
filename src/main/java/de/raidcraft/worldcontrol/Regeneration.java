@@ -160,21 +160,21 @@ public class Regeneration {
 
                     // check breaked blocks
                     allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockBeforeMaterial());
-                    if (allowedItem == null && !regenerateAll) {
-                        continue;
-                    }
-                    if (regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
-                        regenerateRecursive(log.getLocation());
+                    if (allowedItem != null || regenerateAll) {
+                        if (regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
+                            regenerateRecursive(log.getLocation());
+                            continue; // skip because log is already added
+                        }
                     }
 
                     // check placed blocks
                     if(log.getBlockBeforeMaterial() == Material.AIR) {
                         allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockAfterMaterial());
-                        if (allowedItem == null && !regenerateAll) {
-                            continue;
-                        }
-                        if (regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
-                            regenerateRecursive(log.getLocation());
+                        if (allowedItem != null || regenerateAll) {
+                            if (regenerateAll || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
+                                regenerateRecursive(log.getLocation());
+                                continue; // skip because log is already added
+                            }
                         }
                     }
                 }
