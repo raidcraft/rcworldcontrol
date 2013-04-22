@@ -39,6 +39,7 @@ public class WorldControlPlugin extends BasePlugin {
         for(World world : Bukkit.getWorlds()) {
             if(world.getName().equalsIgnoreCase("world")) {
                 Regeneration.INST.regenerateBlocks(world.getName());
+                break;
             }
         }
 
