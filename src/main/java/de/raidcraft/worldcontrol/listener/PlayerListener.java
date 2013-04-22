@@ -40,7 +40,7 @@ public class PlayerListener implements Listener {
         //prevent lava and water placement
         event.setCancelled(true);
 
-        if(player.getFireTicks() > 0) {
+        if(player.getFireTicks() > 0 && (player.getItemInHand().getType() == Material.WATER_BUCKET)) {
             player.setFireTicks(0);
             player.setItemInHand(new ItemStack(Material.BUCKET));
             player.sendMessage(ChatColor.GREEN + "Du hast dich gelöscht!");
