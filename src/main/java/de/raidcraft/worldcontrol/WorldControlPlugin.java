@@ -11,6 +11,7 @@ import de.raidcraft.worldcontrol.listener.PlayerListener;
 import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 /**
  * Author: Philip
@@ -35,7 +36,11 @@ public class WorldControlPlugin extends BasePlugin {
         registerCommands(Commands.class);
         reload();
 
-        Regeneration.INST.regenerateBlocks("world");
+        for(World world : Bukkit.getWorlds()) {
+            if(world.getName().equalsIgnoreCase("world")) {
+                Regeneration.INST.regenerateBlocks(world.getName());
+            }
+        }
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             public void run() {
