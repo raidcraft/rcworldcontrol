@@ -147,7 +147,7 @@ public class BlockListener implements Listener {
             // remove log
             return;
         } catch (NotAllowedItemException e) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht abbauen!");
+            // event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht abbauen!");
         } catch (FarmOnlyException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen abbauen!");
         }
