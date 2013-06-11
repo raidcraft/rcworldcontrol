@@ -3,7 +3,6 @@ package de.raidcraft.worldcontrol.alloweditem;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
-import de.raidcraft.worldcontrol.exceptions.NotAllowedItemException;
 import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Material;
@@ -30,12 +29,12 @@ public class AllowedItemManager {
     }
 
 
-    public AllowedItem getAllowedItem(Block block) throws NotAllowedItemException {
+    public AllowedItem getAllowedItem(Block block) {
 
         if (allowedItems.containsKey(block.getType())) {
             return allowedItems.get(block.getType());
         }
-        throw new NotAllowedItemException();
+        return null;
     }
 
     public Map<Material, AllowedItem> getAllowedItems() {

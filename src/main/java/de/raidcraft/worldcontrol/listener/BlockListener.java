@@ -6,10 +6,6 @@ import de.raidcraft.worldcontrol.LogSaver;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
 import de.raidcraft.worldcontrol.alloweditem.AllowedItemManager;
-import de.raidcraft.worldcontrol.exceptions.FarmOnlyException;
-import de.raidcraft.worldcontrol.exceptions.LocalPlaceLimitReachedException;
-import de.raidcraft.worldcontrol.exceptions.NotAllowedItemException;
-import de.raidcraft.worldcontrol.exceptions.NotDeepEnoughException;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -61,42 +57,41 @@ public class BlockListener implements Listener {
             return;
         }
 
-        try {
-            AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
-
-            // check if can placed
-            if (!allowedItem.canBlockPlace()) {
-                throw new NotAllowedItemException();
-            }
-
-            // check if farm only
-            if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
-                throw new FarmOnlyException();
-            }
-
-            // check if deep enough
-            if (allowedItem.getMaxPlaceHeight() > 0 && event.getBlock().getLocation().getBlockY() > allowedItem.getMaxPlaceHeight()) {
-                throw new NotDeepEnoughException();
-            }
-
-            // check local place limit
-            if (AllowedItemManager.INST.isNearBlockPlaced(event.getBlock(), allowedItem)) {
-                throw new LocalPlaceLimitReachedException();
-            }
-
-            LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
+        AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
+        if(allowedItem == null) {
+            event.setCancelled(true);
             return;
-        } catch (NotAllowedItemException e) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht setzen!");
-        } catch (NotDeepEnoughException e) {
-            event.getPlayer().sendMessage(ChatColor.RED + e.getMessage());
-        } catch (LocalPlaceLimitReachedException e) {
-            event.getPlayer().sendMessage(ChatColor.RED + e.getMessage());
-        } catch (FarmOnlyException e) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen setzen!");
         }
 
-        event.setCancelled(true);
+        // check if can placed
+        if (!allowedItem.canBlockBreak()) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // check if farm only
+        if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen setzen!");
+            event.setCancelled(true);
+            return;
+        }
+
+        // check if deep enough
+        if (allowedItem.getMaxPlaceHeight() > 0 && event.getBlock().getLocation().getBlockY() > allowedItem.getMaxPlaceHeight()) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Dieser Block kann nur weiter unten gesetzt werden!");
+            event.setCancelled(true);
+            return;
+        }
+
+        // check local place limit
+        if (AllowedItemManager.INST.isNearBlockPlaced(event.getBlock(), allowedItem)) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Dieser Block wurde hier in der Gegend schon zu oft gesetzt!");
+            event.setCancelled(true);
+            return;
+        }
+
+        LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
+        return;
     }
 
     @EventHandler(
@@ -123,36 +118,33 @@ public class BlockListener implements Listener {
             return;
         }
 
-        try {
-            AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
-
-            // check if can placed
-            if (!allowedItem.canBlockBreak()) {
-                throw new NotAllowedItemException();
-            }
-
-            // check if farm only
-            if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
-                throw new FarmOnlyException();
-            }
-
-            if(!LogSaver.INST.removeLog(event.getBlock().getLocation(), allowedItem)) {
-                LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
-            }
-
-            if (!allowedItem.canDropItem()) {
-                event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
-                event.setCancelled(true);
-            }
-            // remove log
+        AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
+        if(allowedItem == null) {
+            event.setCancelled(true);
             return;
-        } catch (NotAllowedItemException e) {
-            // event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block hier nicht abbauen!");
-        } catch (FarmOnlyException e) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen abbauen!");
         }
 
-        event.setCancelled(true);
+        // check if can placed
+        if (!allowedItem.canBlockBreak()) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // check if farm only
+        if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen abbauen!");
+            event.setCancelled(true);
+            return;
+        }
+
+        if(!LogSaver.INST.removeLog(event.getBlock().getLocation(), allowedItem)) {
+            LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
+        }
+
+        if (!allowedItem.canDropItem()) {
+            event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(
