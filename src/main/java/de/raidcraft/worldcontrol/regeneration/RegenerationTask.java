@@ -58,7 +58,7 @@ public class RegenerationTask implements Runnable {
 
             // regenerate 200 blocks every round
             case 1:
-                regenerateBlocks(200);
+                regenerateBlocks(5000);
                 break;
 
             // set regeneration as finished
