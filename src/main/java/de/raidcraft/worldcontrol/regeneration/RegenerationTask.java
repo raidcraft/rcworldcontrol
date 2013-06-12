@@ -27,6 +27,7 @@ public class RegenerationTask implements Runnable {
     private List<BlockLog> blocksToRestore = new ArrayList<>();
     private int stage = 0;
     private CollectingState collectingState = CollectingState.STOPPED;
+    private int stillRegenerated = 0;
 
     public RegenerationTask(String world, int radius, Location start, boolean force) {
 
@@ -63,6 +64,7 @@ public class RegenerationTask implements Runnable {
             // set regeneration as finished
             case 2:
                 plugin.getRegenerationManager().regenerationFinished();
+                WCLogger.info("Finished regeneration (" + stillRegenerated + " Blocks)!");
                 break;
         }
     }
@@ -82,7 +84,9 @@ public class RegenerationTask implements Runnable {
             if(log == null) continue;
             subList.add(log);
             regenerateBlockLog(log);
+            stillRegenerated++;
         }
+        WCLogger.info(stillRegenerated + " blocks regenerated...");
 
         cleanDatabase(subList);
     }
