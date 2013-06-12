@@ -28,10 +28,6 @@ public class LogSaver {
 
     public void addBlockLog(BlockLog log) {
 
-        if (isBlocked()) {
-            return;
-        }
-
         if(log.getBlockBeforeMaterial() == log.getBlockAfterMaterial() && log.getBlockBeforeData() == log.getBlockAfterData()) {
             return;
         }
@@ -86,7 +82,7 @@ public class LogSaver {
                 statement.executeUpdate();
                 savingProcessed++;
 
-                if ((savingProcessed + 1) % 1000 == 0) {
+                if ((savingProcessed + 1) % 300 == 0) {
                     connection.commit();
                 }
             }
