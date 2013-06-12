@@ -16,7 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -147,31 +146,31 @@ public class BlockListener implements Listener {
         }
     }
 
-    @EventHandler(
-            ignoreCancelled = true,
-            priority = EventPriority.HIGHEST
-    )
-    public void onGravelSandMove(BlockPhysicsEvent event) {
-        //check world
-        if (!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
-            return;
-
-        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (event.getBlock().getType() != Material.SAND && event.getBlock().getType() != Material.GRAVEL) {
-            return;
-        }
-
-        //check if location is region
-        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
-            return;
-        }
-
-        LogSaver.INST.addBlockLog(new BlockLog("Physics", event.getBlock().getLocation(), event.getBlock(), null));
-    }
+//    @EventHandler(
+//            ignoreCancelled = true,
+//            priority = EventPriority.HIGHEST
+//    )
+//    public void onGravelSandMove(BlockPhysicsEvent event) {
+//        //check world
+//        if (!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
+//            return;
+//
+//        if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
+//            event.setCancelled(true);
+//            return;
+//        }
+//
+//        if (event.getBlock().getType() != Material.SAND && event.getBlock().getType() != Material.GRAVEL) {
+//            return;
+//        }
+//
+//        //check if location is region
+//        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
+//            return;
+//        }
+//
+//        LogSaver.INST.addBlockLog(new BlockLog("Physics", event.getBlock().getLocation(), event.getBlock(), null));
+//    }
 
     @EventHandler(
             ignoreCancelled = true,
