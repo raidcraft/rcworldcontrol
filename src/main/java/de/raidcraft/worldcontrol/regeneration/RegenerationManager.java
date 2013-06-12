@@ -30,7 +30,7 @@ public class RegenerationManager {
         }
 
         LogSaver.INST.setBlocked(true);
-        task = Bukkit.getScheduler().runTaskTimer(plugin, new RegenerationTask(world, radius, start, force), 0, 4*20);
+        task = Bukkit.getScheduler().runTaskTimer(plugin, new RegenerationTask(world, radius, start, force), 0, 1*20);
         return true;
     }
 
