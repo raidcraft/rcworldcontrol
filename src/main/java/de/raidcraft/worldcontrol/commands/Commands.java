@@ -2,11 +2,11 @@ package de.raidcraft.worldcontrol.commands;
 
 import com.sk89q.minecraft.util.commands.*;
 import de.raidcraft.RaidCraft;
-import de.raidcraft.worldcontrol.Regeneration;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
+import de.raidcraft.worldcontrol.regeneration.RegenerationManager;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
-import de.raidcraft.worldcontrol.util.WCLogger;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -52,51 +52,11 @@ public class Commands {
         @Command(
                 aliases = {"regenerate", "regen", "reg"},
                 desc = "Force a regeneration.",
-                min = 1
+                min = 2
         )
         @CommandPermissions("worldcontrol.regenerate")
+        @NestedCommand(NestedRegenerateCommands.class)
         public void regenerate(CommandContext context, CommandSender sender) throws CommandException {
-
-            if (context.getString(0).equalsIgnoreCase("default")) {
-                if(context.argsLength() < 2) {
-                    throw new CommandException("Keine Welt angegeben!");
-                }
-                sender.sendMessage(ChatColor.DARK_GREEN + "Standardregenerierung wurde gestartet! " + ChatColor.DARK_RED + "(Lags möglich)");
-                WCLogger.info("Standardregenerierung wird durchgeführt! " + ChatColor.DARK_RED + "(Lags möglich)");
-                Regeneration.INST.regenerateBlocks(context.getString(1));
-                return;
-            }
-
-            if (context.getString(0).equalsIgnoreCase("all")) {
-                if(context.argsLength() < 2) {
-                    throw new CommandException("Keine Welt angegeben!");
-                }
-
-                if (!Regeneration.INST.canRegenerate()) {
-                    sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
-                    return;
-                }
-
-                sender.sendMessage(ChatColor.DARK_GREEN + "Komplettregenerierung wird durchgeführt!");
-                Regeneration.INST.regenerateBlocks(context.getString(1), true);
-                return;
-            }
-
-            if (context.getString(0).equalsIgnoreCase("info")) {
-                if (!Regeneration.INST.canRegenerate()) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Es wird zurzeit eine Regenierung durchgeführt!");
-                } else {
-                    sender.sendMessage(ChatColor.DARK_GREEN + "Es findet derzeit keine Regenerierung statt!");
-                }
-                return;
-            }
-
-            if(sender instanceof CommandSender) {
-                throw new CommandException("Radius-Regenerationen können nur von Spielern durchgeführt werden!");
-            }
-
-            int radius = context.getInteger(0);
-            //TODO radius regeneration
         }
 
         @Command(
@@ -130,6 +90,60 @@ public class Commands {
             }
 
             sender.sendMessage(ChatColor.DARK_RED + "Als Parameter entweder 'on' oder 'off'!");
+        }
+    }
+
+    public static class NestedRegenerateCommands {
+
+        private final WorldControlPlugin module;
+
+        public NestedRegenerateCommands(WorldControlPlugin module) {
+
+            this.module = module;
+        }
+
+        @Command(
+                aliases = {"all"},
+                desc = "Regenerate all",
+                min = 1
+        )
+        public void all(CommandContext context, CommandSender sender) throws CommandException {
+
+            WorldControlPlugin plugin = RaidCraft.getComponent(WorldControlPlugin.class);
+            RegenerationManager regenerationManager = plugin.getRegenerationManager();
+            String world = context.getString(0);
+
+            if (regenerationManager.isRegenerationRunning()) {
+                sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
+                return;
+            }
+
+            if(!plugin.getRegenerationManager().regenerate(world, new Location(null, 0,0,0), 20000, true)) {
+                throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
+            }
+            sender.sendMessage(ChatColor.DARK_GREEN + "Komplettregenerierung wird durchgeführt!");
+        }
+
+        @Command(
+                aliases = {"default", "normal"},
+                desc = "Regenerate normal",
+                min = 1
+        )
+        public void normal(CommandContext context, CommandSender sender) throws CommandException {
+
+            WorldControlPlugin plugin = RaidCraft.getComponent(WorldControlPlugin.class);
+            RegenerationManager regenerationManager = plugin.getRegenerationManager();
+            String world = context.getString(0);
+
+            if (regenerationManager.isRegenerationRunning()) {
+                sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
+                return;
+            }
+
+            if(!plugin.getRegenerationManager().regenerate(world, new Location(null, 0,0,0), 20000, false)) {
+                throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
+            }
+            sender.sendMessage(ChatColor.DARK_GREEN + "Default-Regenerierung wird durchgeführt!");
         }
     }
 }

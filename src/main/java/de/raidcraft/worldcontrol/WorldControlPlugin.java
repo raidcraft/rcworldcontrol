@@ -8,10 +8,11 @@ import de.raidcraft.worldcontrol.alloweditem.AllowedItemManager;
 import de.raidcraft.worldcontrol.commands.Commands;
 import de.raidcraft.worldcontrol.listener.BlockListener;
 import de.raidcraft.worldcontrol.listener.PlayerListener;
+import de.raidcraft.worldcontrol.regeneration.RegenerationManager;
 import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.Location;
 
 /**
  * Author: Philip
@@ -23,6 +24,8 @@ public class WorldControlPlugin extends BasePlugin {
     public LocalConfiguration config;
 
     public boolean allowPhysics = true;
+
+    private RegenerationManager regenerationManager;
 
     @Override
     public void enable() {
@@ -36,12 +39,8 @@ public class WorldControlPlugin extends BasePlugin {
         registerCommands(Commands.class);
         reload();
 
-        for(World world : Bukkit.getWorlds()) {
-            if(world.getName().equalsIgnoreCase("world")) {
-                Regeneration.INST.regenerateBlocks(world.getName());
-                break;
-            }
-        }
+        regenerationManager = new RegenerationManager(this);
+        regenerationManager.regenerate("world", new Location(null , 0, 0, 0), 50000, false);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             public void run() {
@@ -79,5 +78,10 @@ public class WorldControlPlugin extends BasePlugin {
 
             super(plugin, "config.yml");
         }
+    }
+
+    public RegenerationManager getRegenerationManager() {
+
+        return regenerationManager;
     }
 }

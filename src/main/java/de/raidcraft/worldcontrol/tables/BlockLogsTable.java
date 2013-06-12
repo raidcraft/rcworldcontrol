@@ -202,13 +202,14 @@ public class BlockLogsTable extends Table {
         LogSaver.INST.setBlocked(true);
 
         try {
+            executeUpdate("DROP TABLE `" + getTableName() + "_temp`");
             executeUpdate("CREATE TABLE IF NOT EXISTS `" + getTableName() + "_temp` LIKE " + getTableName());
             executeUpdate("INSERT INTO `" + getTableName() + "_temp` " + selectNewestQuery);
             executeUpdate("TRUNCATE TABLE `" + getTableName() + "`");
             executeUpdate("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`");
             executeUpdate("DROP TABLE `" + getTableName() + "_temp`");
         } catch (SQLException e) {
-            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+            e.printStackTrace();
         }
 
         LogSaver.INST.setBlocked(false);
