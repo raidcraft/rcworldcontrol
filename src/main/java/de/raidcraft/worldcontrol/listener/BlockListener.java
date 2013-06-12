@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -202,6 +203,10 @@ public class BlockListener implements Listener {
             priority = EventPriority.HIGHEST
     )
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+
+        if(event.getEntityType() == EntityType.FALLING_BLOCK) {
+            return;
+        }
 
         //check world
         if (!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
