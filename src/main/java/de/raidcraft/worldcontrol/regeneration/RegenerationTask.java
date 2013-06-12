@@ -77,6 +77,7 @@ public class RegenerationTask implements Runnable {
         List<BlockLog> subList = new ArrayList<>(number);
         for(int i = 0; i < number; i++) {
 
+            if(blocksToRestore.size() == 0) break;
             BlockLog log = blocksToRestore.remove(0);
             if(log == null) continue;
             subList.add(log);
