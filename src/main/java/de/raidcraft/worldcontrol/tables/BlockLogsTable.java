@@ -204,9 +204,9 @@ public class BlockLogsTable extends Table {
         try {
             executeUpdate("DROP TABLE IF EXISTS `" + getTableName() + "_temp`");
             executeUpdate("CREATE TABLE `" + getTableName() + "_temp` LIKE " + getTableName());
-            executeUpdate("INSERT INTO `" + getTableName() + "_temp` " + selectNewestQuery);
+            executeUpdate("INSERT INTO `" + getTableName() + "_temp` (player, before_material, before_data, after_material, after_data, world, x, y, z, time) VALUES (" + selectNewestQuery + ")");
             executeUpdate("TRUNCATE TABLE `" + getTableName() + "`");
-            executeUpdate("INSERT INTO `" + getTableName() + "` SELECT player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM `" + getTableName() + "_temp`");
+            executeUpdate("INSERT INTO `" + getTableName() + "` (player, before_material, before_data, after_material, after_data, world, x, y, z, time) VALUES (SELECT player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM `" + getTableName() + "_temp`)");
             executeUpdate("DROP TABLE `" + getTableName() + "_temp`");
         } catch (SQLException e) {
             e.printStackTrace();
