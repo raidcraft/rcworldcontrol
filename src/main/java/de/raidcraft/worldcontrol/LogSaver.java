@@ -44,6 +44,8 @@ public class LogSaver {
 
     public void save() {
 
+        if(isBlocked()) return;
+
         if (logs.size() <= 0) {
             return;
         }
