@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class BlockLogsTable extends Table {
 
-    private String selectNewestQuery = "SELECT id, player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM " +
+    private String selectNewestQuery = "SELECT player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM " +
             "(SELECT *, UNIX_TIMESTAMP(STR_TO_DATE(time,'%d-%m-%Y %H:%i:%S')) AS timestamp FROM `" + getTableName() + "` " +
             "ORDER BY timestamp) AS t1 GROUP BY world, x, y, z";
 
@@ -206,7 +206,7 @@ public class BlockLogsTable extends Table {
             executeUpdate("CREATE TABLE `" + getTableName() + "_temp` LIKE " + getTableName());
             executeUpdate("INSERT INTO `" + getTableName() + "_temp` " + selectNewestQuery);
             executeUpdate("TRUNCATE TABLE `" + getTableName() + "`");
-            executeUpdate("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`");
+            executeUpdate("INSERT INTO `" + getTableName() + "` SELECT player, before_material, before_data, after_material, after_data, world, x, y, z, time FROM `" + getTableName() + "_temp`");
             executeUpdate("DROP TABLE `" + getTableName() + "_temp`");
         } catch (SQLException e) {
             e.printStackTrace();
