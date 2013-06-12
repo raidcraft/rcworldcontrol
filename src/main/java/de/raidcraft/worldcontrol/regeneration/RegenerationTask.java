@@ -80,7 +80,7 @@ public class RegenerationTask implements Runnable {
             BlockLog log = blocksToRestore.remove(0);
             if(log == null) continue;
             subList.add(log);
-            regenerateBlockLog(blocksToRestore.remove(0));
+            regenerateBlockLog(log);
         }
 
         cleanDatabase(subList);
