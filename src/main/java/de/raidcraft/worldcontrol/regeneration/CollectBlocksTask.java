@@ -34,6 +34,7 @@ public class CollectBlocksTask implements Runnable {
 
         List<BlockLog> allLogs = RaidCraft.getTable(BlockLogsTable.class).getAllLogs(regenerationTask.getWorld());
         for (BlockLog log : allLogs) {
+            if(log.getLocation().distance(regenerationTask.getStart()) > regenerationTask.getRadius()) continue;
             allSavedLogs.put(log.getLocation(), log);
         }
 

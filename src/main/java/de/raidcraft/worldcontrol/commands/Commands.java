@@ -8,6 +8,7 @@ import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * Author: Philip
@@ -144,6 +145,33 @@ public class Commands {
                 throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
             }
             sender.sendMessage(ChatColor.DARK_GREEN + "Default-Regenerierung wird durchgeführt!");
+        }
+
+        @Command(
+                aliases = {"radius", "local"},
+                desc = "Regenerate within defined radius",
+                min = 1
+        )
+        public void radius(CommandContext context, CommandSender sender) throws CommandException {
+
+            WorldControlPlugin plugin = RaidCraft.getComponent(WorldControlPlugin.class);
+            RegenerationManager regenerationManager = plugin.getRegenerationManager();
+            String world = context.getString(0);
+
+            if (regenerationManager.isRegenerationRunning()) {
+                sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
+                return;
+            }
+
+            int radius = 10;
+            if(context.argsLength() > 1) {
+                radius = context.getInteger(1);
+            }
+
+            if(!plugin.getRegenerationManager().regenerate(world, ((Player)sender).getLocation(), radius, false)) {
+                throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
+            }
+            sender.sendMessage(ChatColor.DARK_GREEN + "Radius-Regenerierung im Umkreis von " + radius + " Blöcken wird durchgeführt!");
         }
     }
 }
