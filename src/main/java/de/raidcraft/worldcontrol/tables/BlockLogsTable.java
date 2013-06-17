@@ -202,11 +202,12 @@ public class BlockLogsTable extends Table {
         LogSaver.INST.setBlocked(true);
 
         try {
-            executeUpdate("DROP TABLE IF EXISTS `" + getTableName() + "_temp`");
-            executeUpdate("CREATE TABLE `" + getTableName() + "_temp` " + selectNewestQuery);
-            executeUpdate("DROP TABLE `" + getTableName() + "`");
-            executeUpdate("CREATE TABLE `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`");
-            executeUpdate("DROP TABLE `" + getTableName() + "_temp`");
+            getConnection().prepareStatement("DROP TABLE IF EXISTS `" + getTableName() + "_temp`").execute();
+            getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `" + getTableName() + "_temp` LIKE " + getTableName()).execute();
+            getConnection().prepareStatement("INSERT INTO `" + getTableName() + "_temp` " + selectNewestQuery).execute();
+            getConnection().prepareStatement("TRUNCATE TABLE `" + getTableName() + "`").execute();
+            getConnection().prepareStatement("INSERT INTO `" + getTableName() + "` SELECT * FROM `" + getTableName() + "_temp`").execute();
+            getConnection().prepareStatement("DROP TABLE `" + getTableName() + "_temp`").execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
