@@ -31,7 +31,6 @@ public class BlockListener implements Listener {
 
 
     @EventHandler(
-            ignoreCancelled = true,
             priority = EventPriority.HIGHEST
     )
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -95,7 +94,6 @@ public class BlockListener implements Listener {
     }
 
     @EventHandler(
-            ignoreCancelled = true,
             priority = EventPriority.HIGHEST
     )
     public void onBlockBreak(BlockBreakEvent event) {
