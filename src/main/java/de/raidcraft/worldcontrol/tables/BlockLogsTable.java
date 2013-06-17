@@ -42,7 +42,7 @@ public class BlockLogsTable extends Table {
         try {
             executeUpdate(
                     "CREATE TABLE `" + getTableName() + "` (" +
-                            "`id` INT NOT NULL AUTO_INCREMENT, " +
+                            "`id` INT( 20 ) NOT NULL AUTO_INCREMENT, " +
                             "`player` VARCHAR( 32 ) NOT NULL, " +
                             "`before_material` VARCHAR( 32 ) NOT NULL, " +
                             "`before_data` INT( 11 ) NOT NULL, " +
