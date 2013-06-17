@@ -38,7 +38,7 @@ public class WorldControlPlugin extends BasePlugin {
         registerCommands(Commands.class);
         reload();
 
-        //regenerationManager = new RegenerationManager(this);
+        regenerationManager = new RegenerationManager(this);
         //regenerationManager.regenerate("world", new Location(null , 0, 0, 0), 50000, false);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
