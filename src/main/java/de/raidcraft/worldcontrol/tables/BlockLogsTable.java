@@ -33,7 +33,7 @@ public class BlockLogsTable extends Table {
 
     public BlockLogsTable() {
 
-        super("block_logs", "worldcontrol_");
+        super("block_logs_" + Bukkit.getWorlds().get(0).getName().toLowerCase(), "worldcontrol_");
     }
 
     @Override
