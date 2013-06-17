@@ -208,6 +208,11 @@ public class BlockListener implements Listener {
             return;
         }
 
+        if(event.getEntityType() == EntityType.SHEEP) {
+            event.setCancelled(true);
+            return;
+        }
+
         //check world
         if (!event.getBlock().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
