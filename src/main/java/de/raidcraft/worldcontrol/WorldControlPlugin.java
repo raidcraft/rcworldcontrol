@@ -12,6 +12,7 @@ import de.raidcraft.worldcontrol.regeneration.RegenerationManager;
 import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 /**
  * Author: Philip
@@ -39,7 +40,7 @@ public class WorldControlPlugin extends BasePlugin {
         reload();
 
         regenerationManager = new RegenerationManager(this);
-        //regenerationManager.regenerate("world", new Location(null , 0, 0, 0), 50000, false);
+        regenerationManager.regenerate(Bukkit.getWorlds().get(0).getName(), new Location(Bukkit.getWorlds().get(0) , 0, 0, 0), 50000, false);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             public void run() {
