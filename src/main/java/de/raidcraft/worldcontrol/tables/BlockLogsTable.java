@@ -40,7 +40,7 @@ public class BlockLogsTable extends Table {
     public void createTable() {
 
         try {
-            executeQuery(
+            executeUpdate(
                     "CREATE TABLE `" + getTableName() + "` (" +
                             "`id` INT NOT NULL AUTO_INCREMENT, " +
                             "`player` VARCHAR( 32 ) NOT NULL, " +

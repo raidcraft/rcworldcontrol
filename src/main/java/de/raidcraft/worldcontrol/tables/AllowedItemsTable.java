@@ -25,7 +25,7 @@ public class AllowedItemsTable extends Table {
     public void createTable() {
 
         try {
-            getConnection().prepareStatement(
+            executeUpdate(
                     "CREATE TABLE `" + getTableName() + "` (" +
                             "`id` INT NOT NULL AUTO_INCREMENT, " +
                             "`material` VARCHAR( 32 ) NOT NULL, " +
@@ -37,7 +37,7 @@ public class AllowedItemsTable extends Table {
                             "`place_distance` INT( 11 ) NOT NULL, " +
                             "`place_max_height` INT( 11 ) NOT NULL, " +
                             "PRIMARY KEY ( `id` )" +
-                            ")").execute();
+                            ")");
         } catch (SQLException e) {
             RaidCraft.LOGGER.warning(e.getMessage());
             e.printStackTrace();
