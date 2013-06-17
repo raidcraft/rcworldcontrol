@@ -5,8 +5,10 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.regeneration.RegenerationManager;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -112,14 +114,19 @@ public class Commands {
 
             WorldControlPlugin plugin = RaidCraft.getComponent(WorldControlPlugin.class);
             RegenerationManager regenerationManager = plugin.getRegenerationManager();
-            String world = context.getString(0);
+            String worldName = context.getString(0);
 
             if (regenerationManager.isRegenerationRunning()) {
                 sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
                 return;
             }
 
-            if(!plugin.getRegenerationManager().regenerate(world, new Location(null, 0,0,0), 20000, true)) {
+            World world = Bukkit.getWorld(worldName);
+            if(world == null) {
+                throw new CommandException("Die angegebene Welt existiert nicht!");
+            }
+
+            if(!plugin.getRegenerationManager().regenerate(world.getName(), new Location(world, 0,0,0), 20000, true)) {
                 throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
             }
             sender.sendMessage(ChatColor.DARK_GREEN + "Komplettregenerierung wird durchgeführt!");
@@ -134,14 +141,19 @@ public class Commands {
 
             WorldControlPlugin plugin = RaidCraft.getComponent(WorldControlPlugin.class);
             RegenerationManager regenerationManager = plugin.getRegenerationManager();
-            String world = context.getString(0);
+            String worldName = context.getString(0);
 
             if (regenerationManager.isRegenerationRunning()) {
                 sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
                 return;
             }
 
-            if(!plugin.getRegenerationManager().regenerate(world, new Location(null, 0,0,0), 20000, false)) {
+            World world = Bukkit.getWorld(worldName);
+            if(world == null) {
+                throw new CommandException("Die angegebene Welt existiert nicht!");
+            }
+
+            if(!plugin.getRegenerationManager().regenerate(world.getName(), new Location(world, 0,0,0), 20000, false)) {
                 throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
             }
             sender.sendMessage(ChatColor.DARK_GREEN + "Default-Regenerierung wird durchgeführt!");
@@ -156,7 +168,7 @@ public class Commands {
 
             WorldControlPlugin plugin = RaidCraft.getComponent(WorldControlPlugin.class);
             RegenerationManager regenerationManager = plugin.getRegenerationManager();
-            String world = context.getString(0);
+            String worldName = context.getString(0);
 
             if (regenerationManager.isRegenerationRunning()) {
                 sender.sendMessage(ChatColor.GOLD + "Es läuft derzeit bereits eine Regenerierung!");
@@ -168,7 +180,12 @@ public class Commands {
                 radius = context.getInteger(1);
             }
 
-            if(!plugin.getRegenerationManager().regenerate(world, ((Player)sender).getLocation(), radius, false)) {
+            World world = Bukkit.getWorld(worldName);
+            if(world == null) {
+                throw new CommandException("Die angegebene Welt existiert nicht!");
+            }
+
+            if(!plugin.getRegenerationManager().regenerate(world.getName(), ((Player)sender).getLocation(), radius, false)) {
                 throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
             }
             sender.sendMessage(ChatColor.DARK_GREEN + "Radius-Regenerierung im Umkreis von " + radius + " Blöcken wird durchgeführt!");
