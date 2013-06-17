@@ -185,7 +185,7 @@ public class Commands {
                 throw new CommandException("Die angegebene Welt existiert nicht!");
             }
 
-            if(!plugin.getRegenerationManager().regenerate(world.getName(), ((Player)sender).getLocation(), radius, false)) {
+            if(!plugin.getRegenerationManager().regenerate(world.getName(), ((Player)sender).getLocation(), radius, true)) {
                 throw new CommandException("Die Regenerierung konnt nicht gestaret werden! Falsche Welt?");
             }
             sender.sendMessage(ChatColor.DARK_GREEN + "Radius-Regenerierung im Umkreis von " + radius + " Blöcken wird durchgeführt!");
