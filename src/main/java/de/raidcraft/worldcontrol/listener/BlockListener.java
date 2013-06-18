@@ -143,6 +143,8 @@ public class BlockListener implements Listener {
             event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
             event.setCancelled(true);
         }
+
+        event.setCancelled(false);
     }
 
 //    @EventHandler(
