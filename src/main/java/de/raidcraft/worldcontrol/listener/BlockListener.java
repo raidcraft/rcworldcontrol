@@ -90,7 +90,7 @@ public class BlockListener implements Listener {
         }
 
         LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
-        return;
+        event.setCancelled(false);
     }
 
     @EventHandler(
