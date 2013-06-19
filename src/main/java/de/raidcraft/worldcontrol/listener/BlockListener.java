@@ -31,6 +31,7 @@ public class BlockListener implements Listener {
 
 
     @EventHandler(
+            ignoreCancelled = true,
             priority = EventPriority.HIGHEST
     )
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -90,10 +91,10 @@ public class BlockListener implements Listener {
         }
 
         LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
-        event.setCancelled(false);
     }
 
     @EventHandler(
+            ignoreCancelled = true,
             priority = EventPriority.HIGHEST
     )
     public void onBlockBreak(BlockBreakEvent event) {
@@ -143,8 +144,6 @@ public class BlockListener implements Listener {
             event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
             event.setCancelled(true);
         }
-
-        event.setCancelled(false);
     }
 
 //    @EventHandler(
