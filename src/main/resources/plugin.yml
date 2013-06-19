@@ -3,4 +3,4 @@ main: de.raidcraft.worldcontrol.WorldControlPlugin
 version: ${project.version}#${build.number}
 author: Strasse36
 website: www.raid-craft.de
-depend: [RaidCraft-API]
+depend: [RaidCraft-API, WorldGuard]

@@ -2,11 +2,16 @@ package de.raidcraft.worldcontrol.util;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+
+import java.util.Map;
 
 /**
  * Author: Philip
@@ -56,6 +61,17 @@ public class WorldGuardManager {
             }
         }
         return false;
+    }
+
+    public void updateItemFarmFlags(World world) {
+
+        for(Map.Entry<String, ProtectedRegion> entry : worldGuard.getRegionManager(world).getRegions().entrySet()) {
+
+            if(!entry.getKey().startsWith(RaidCraft.getComponent(WorldControlPlugin.class).config.farmPrefix)) continue;
+            ProtectedRegion region = entry.getValue();
+            region.setFlag(DefaultFlag.BUILD, StateFlag.State.ALLOW);
+        }
+
     }
 
 }
