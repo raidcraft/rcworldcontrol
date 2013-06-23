@@ -66,9 +66,19 @@ public class PlayerListener implements Listener {
 
         event.setCancelled(true);
         if(event.getBlockClicked().getType() == Material.STATIONARY_WATER || event.getBlockClicked().getType() == Material.WATER) {
+            if(event.getItemStack().getAmount() > 1) {
+                int firstEmpty = event.getPlayer().getInventory().firstEmpty();
+                if(firstEmpty == -1) return;
+                event.getPlayer().getInventory().setItem(firstEmpty, new ItemStack(Material.BUCKET, event.getItemStack().getAmount() - 1));
+            }
             event.getPlayer().setItemInHand(new ItemStack(Material.WATER_BUCKET));
         }
         if(event.getBlockClicked().getType() == Material.STATIONARY_LAVA || event.getBlockClicked().getType() == Material.LAVA) {
+            if(event.getItemStack().getAmount() > 1) {
+                int firstEmpty = event.getPlayer().getInventory().firstEmpty();
+                if(firstEmpty == -1) return;
+                event.getPlayer().getInventory().setItem(firstEmpty, new ItemStack(Material.BUCKET, event.getItemStack().getAmount() - 1));
+            }
             event.getPlayer().setItemInHand(new ItemStack(Material.LAVA_BUCKET));
         }
         event.getPlayer().updateInventory();
