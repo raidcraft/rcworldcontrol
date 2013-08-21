@@ -42,6 +42,10 @@ public class BlockListener implements Listener {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
+        if (event.getPlayer().hasPermission("worldcontrol.block.place." + event.getBlock().getTypeId())) {
+            return;
+        }
+
         //check world
         if (!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
@@ -102,6 +106,9 @@ public class BlockListener implements Listener {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
+        if (event.getPlayer().hasPermission("worldcontrol.block.break." + event.getBlock().getTypeId())) {
+            return;
+        }
         //check world
         if (!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
