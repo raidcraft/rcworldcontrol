@@ -5,7 +5,6 @@ import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItemManager;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -61,7 +60,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
+        AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItem(event.getBlock());
         if(allowedItem == null) {
             event.setCancelled(true);
             return;
@@ -88,7 +87,7 @@ public class BlockListener implements Listener {
         }
 
         // check local place limit
-        if (AllowedItemManager.INST.isNearBlockPlaced(event.getBlock(), allowedItem)) {
+        if (RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().isNearBlockPlaced(event.getBlock(), allowedItem)) {
             event.getPlayer().sendMessage(ChatColor.RED + "Dieser Block wurde hier in der Gegend schon zu oft gesetzt!");
             event.setCancelled(true);
             return;
@@ -124,7 +123,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        AllowedItem allowedItem = AllowedItemManager.INST.getAllowedItem(event.getBlock());
+        AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItem(event.getBlock());
         if(allowedItem == null) {
             event.setCancelled(true);
             return;

@@ -5,7 +5,6 @@ import de.raidcraft.util.DateUtil;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItemManager;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -49,7 +48,7 @@ public class CollectBlocksTask implements Runnable {
             double rnd = Math.random() * (RaidCraft.getComponent(WorldControlPlugin.class).config.timeFactor / 100);
 
             // check breaked blocks
-            allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockBeforeMaterial());
+            allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItems().get(log.getBlockBeforeMaterial());
             if (allowedItem != null || regenerationTask.isForced()) {
                 if (regenerationTask.isForced() || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                     regenerateRecursive(log.getLocation());
@@ -59,7 +58,7 @@ public class CollectBlocksTask implements Runnable {
 
             // check placed blocks
             if(log.getBlockBeforeMaterial() == Material.AIR) {
-                allowedItem = AllowedItemManager.INST.getAllowedItems().get(log.getBlockAfterMaterial());
+                allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItems().get(log.getBlockAfterMaterial());
                 if (allowedItem != null || regenerationTask.isForced()) {
                     if (regenerationTask.isForced() || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());

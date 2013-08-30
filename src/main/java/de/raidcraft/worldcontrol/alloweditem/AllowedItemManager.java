@@ -3,6 +3,7 @@ package de.raidcraft.worldcontrol.alloweditem;
 import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
+import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Material;
@@ -16,9 +17,13 @@ import java.util.Map;
  */
 public class AllowedItemManager {
 
-    public final static AllowedItemManager INST = new AllowedItemManager();
-
+    private WorldControlPlugin plugin;
     private Map<Material, AllowedItem> allowedItems = new HashMap<>();
+
+    public AllowedItemManager(WorldControlPlugin plugin) {
+
+        this.plugin = plugin;
+    }
 
     public void reload() {
 

@@ -27,6 +27,7 @@ public class WorldControlPlugin extends BasePlugin {
     public boolean allowPhysics = true;
 
     private RegenerationManager regenerationManager;
+    private AllowedItemManager allowedItemManager;
 
     @Override
     public void enable() {
@@ -38,6 +39,9 @@ public class WorldControlPlugin extends BasePlugin {
         registerEvents(new PlayerListener());
 
         registerCommands(Commands.class);
+
+        allowedItemManager = new AllowedItemManager(this); // must loaded before reload is called!!!
+
         reload();
 
         regenerationManager = new RegenerationManager(this);
@@ -55,7 +59,7 @@ public class WorldControlPlugin extends BasePlugin {
     public void reload() {
 
         config = configure(new LocalConfiguration(this));
-        AllowedItemManager.INST.reload();
+        allowedItemManager.reload();
         WorldGuardManager.INST.updateItemFarmFlags(Bukkit.getWorld(config.world));
     }
 
@@ -85,5 +89,10 @@ public class WorldControlPlugin extends BasePlugin {
     public RegenerationManager getRegenerationManager() {
 
         return regenerationManager;
+    }
+
+    public AllowedItemManager getAllowedItemManager() {
+
+        return allowedItemManager;
     }
 }
