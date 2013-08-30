@@ -4,7 +4,7 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
+import de.raidcraft.worldcontrol.restricteditem.RestrictedItem;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -60,34 +60,34 @@ public class BlockListener implements Listener {
             return;
         }
 
-        AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItem(event.getBlock());
-        if(allowedItem == null) {
+        RestrictedItem restrictedItem = RaidCraft.getComponent(WorldControlPlugin.class).getRestrictedItemManager().getRestrictedItem(event.getBlock());
+        if(restrictedItem == null) {
             event.setCancelled(true);
             return;
         }
 
         // check if can placed
-        if (!allowedItem.canBlockPlace()) {
+        if (!restrictedItem.canBlockPlace()) {
             event.setCancelled(true);
             return;
         }
 
         // check if farm only
-        if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
+        if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && restrictedItem.isFarmOnly()) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen setzen!");
             event.setCancelled(true);
             return;
         }
 
         // check if deep enough
-        if (allowedItem.getMaxPlaceHeight() > 0 && event.getBlock().getLocation().getBlockY() > allowedItem.getMaxPlaceHeight()) {
+        if (restrictedItem.getMaxPlaceHeight() > 0 && event.getBlock().getLocation().getBlockY() > restrictedItem.getMaxPlaceHeight()) {
             event.getPlayer().sendMessage(ChatColor.RED + "Dieser Block kann nur weiter unten gesetzt werden!");
             event.setCancelled(true);
             return;
         }
 
         // check local place limit
-        if (RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().isNearBlockPlaced(event.getBlock(), allowedItem)) {
+        if (RaidCraft.getComponent(WorldControlPlugin.class).getRestrictedItemManager().isNearBlockPlaced(event.getBlock(), restrictedItem)) {
             event.getPlayer().sendMessage(ChatColor.RED + "Dieser Block wurde hier in der Gegend schon zu oft gesetzt!");
             event.setCancelled(true);
             return;
@@ -123,30 +123,30 @@ public class BlockListener implements Listener {
             return;
         }
 
-        AllowedItem allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItem(event.getBlock());
-        if(allowedItem == null) {
+        RestrictedItem restrictedItem = RaidCraft.getComponent(WorldControlPlugin.class).getRestrictedItemManager().getRestrictedItem(event.getBlock());
+        if(restrictedItem == null) {
             event.setCancelled(true);
             return;
         }
 
         // check if can placed
-        if (!allowedItem.canBlockBreak()) {
+        if (!restrictedItem.canBlockBreak()) {
             event.setCancelled(true);
             return;
         }
 
         // check if farm only
-        if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && allowedItem.isFarmOnly()) {
+        if (!WorldGuardManager.INST.isFarm(event.getBlock().getLocation()) && restrictedItem.isFarmOnly()) {
             event.getPlayer().sendMessage(ChatColor.RED + "Du kannst diesen Block nur in Farmen abbauen!");
             event.setCancelled(true);
             return;
         }
 
-        if(!LogSaver.INST.removeLog(event.getBlock().getLocation(), allowedItem)) {
+        if(!LogSaver.INST.removeLog(event.getBlock().getLocation(), restrictedItem)) {
             LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), event.getBlock(), null));
         }
 
-        if (!allowedItem.canDropItem()) {
+        if (!restrictedItem.canDropItem()) {
             event.getBlock().setType(Material.AIR); // remove block but don't spawn an item
             event.setCancelled(true);
         }

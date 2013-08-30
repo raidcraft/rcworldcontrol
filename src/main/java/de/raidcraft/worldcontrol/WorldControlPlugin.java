@@ -4,12 +4,12 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItemManager;
+import de.raidcraft.worldcontrol.restricteditem.RestrictedItemManager;
 import de.raidcraft.worldcontrol.commands.Commands;
 import de.raidcraft.worldcontrol.listener.BlockListener;
 import de.raidcraft.worldcontrol.listener.PlayerListener;
 import de.raidcraft.worldcontrol.regeneration.RegenerationManager;
-import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
+import de.raidcraft.worldcontrol.tables.RestrictedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
 import org.bukkit.Bukkit;
@@ -27,12 +27,12 @@ public class WorldControlPlugin extends BasePlugin {
     public boolean allowPhysics = true;
 
     private RegenerationManager regenerationManager;
-    private AllowedItemManager allowedItemManager;
+    private RestrictedItemManager restrictedItemManager;
 
     @Override
     public void enable() {
 
-        registerTable(AllowedItemsTable.class, new AllowedItemsTable());
+        registerTable(RestrictedItemsTable.class, new RestrictedItemsTable());
         registerTable(BlockLogsTable.class, new BlockLogsTable());
 
         registerEvents(new BlockListener());
@@ -40,7 +40,7 @@ public class WorldControlPlugin extends BasePlugin {
 
         registerCommands(Commands.class);
 
-        allowedItemManager = new AllowedItemManager(this); // must loaded before reload is called!!!
+        restrictedItemManager = new RestrictedItemManager(this); // must loaded before reload is called!!!
 
         reload();
 
@@ -59,7 +59,7 @@ public class WorldControlPlugin extends BasePlugin {
     public void reload() {
 
         config = configure(new LocalConfiguration(this));
-        allowedItemManager.reload();
+        restrictedItemManager.reload();
         WorldGuardManager.INST.updateItemFarmFlags(Bukkit.getWorld(config.world));
     }
 
@@ -91,8 +91,8 @@ public class WorldControlPlugin extends BasePlugin {
         return regenerationManager;
     }
 
-    public AllowedItemManager getAllowedItemManager() {
+    public RestrictedItemManager getRestrictedItemManager() {
 
-        return allowedItemManager;
+        return restrictedItemManager;
     }
 }

@@ -1,7 +1,7 @@
 package de.raidcraft.worldcontrol;
 
 import de.raidcraft.RaidCraft;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
+import de.raidcraft.worldcontrol.restricteditem.RestrictedItem;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Location;
 
@@ -125,7 +125,7 @@ public class LogSaver {
         return blocked;
     }
 
-    public boolean removeLog(Location location, AllowedItem item) {
+    public boolean removeLog(Location location, RestrictedItem item) {
 
         boolean result = false;
         for (BlockLog currLog : logs) {

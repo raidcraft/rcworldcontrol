@@ -1,10 +1,10 @@
-package de.raidcraft.worldcontrol.alloweditem;
+package de.raidcraft.worldcontrol.restricteditem;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
-import de.raidcraft.worldcontrol.tables.AllowedItemsTable;
+import de.raidcraft.worldcontrol.tables.RestrictedItemsTable;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,39 +15,39 @@ import java.util.Map;
 /**
  * @author Philip
  */
-public class AllowedItemManager {
+public class RestrictedItemManager {
 
     private WorldControlPlugin plugin;
-    private Map<Material, AllowedItem> allowedItems = new HashMap<>();
+    private Map<Material, RestrictedItem> restrictedItems = new HashMap<>();
 
-    public AllowedItemManager(WorldControlPlugin plugin) {
+    public RestrictedItemManager(WorldControlPlugin plugin) {
 
         this.plugin = plugin;
     }
 
     public void reload() {
 
-        allowedItems.clear();
-        for (AllowedItem item : RaidCraft.getTable(AllowedItemsTable.class).getAllowedItems()) {
-            allowedItems.put(item.getMaterial(), item);
+        restrictedItems.clear();
+        for (RestrictedItem item : RaidCraft.getTable(RestrictedItemsTable.class).getAllRestrictedItems()) {
+            restrictedItems.put(item.getMaterial(), item);
         }
     }
 
 
-    public AllowedItem getAllowedItem(Block block) {
+    public RestrictedItem getRestrictedItem(Block block) {
 
-        if (allowedItems.containsKey(block.getType())) {
-            return allowedItems.get(block.getType());
+        if (restrictedItems.containsKey(block.getType())) {
+            return restrictedItems.get(block.getType());
         }
         return null;
     }
 
-    public Map<Material, AllowedItem> getAllowedItems() {
+    public Map<Material, RestrictedItem> getRestrictedItems() {
 
-        return allowedItems;
+        return restrictedItems;
     }
 
-    public boolean isNearBlockPlaced(Block block, AllowedItem item) {
+    public boolean isNearBlockPlaced(Block block, RestrictedItem item) {
 
         for (BlockLog log : LogSaver.INST.getLogs()) {
             if (log.getBlockAfterMaterial() == item.getMaterial()) {

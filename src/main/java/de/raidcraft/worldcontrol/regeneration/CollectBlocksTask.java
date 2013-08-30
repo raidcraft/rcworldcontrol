@@ -4,7 +4,7 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.util.DateUtil;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
+import de.raidcraft.worldcontrol.restricteditem.RestrictedItem;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -44,13 +44,13 @@ public class CollectBlocksTask implements Runnable {
                 continue;
             }
 
-            AllowedItem allowedItem;
+            RestrictedItem restrictedItem;
             double rnd = Math.random() * (RaidCraft.getComponent(WorldControlPlugin.class).config.timeFactor / 100);
 
             // check breaked blocks
-            allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItems().get(log.getBlockBeforeMaterial());
-            if (allowedItem != null || regenerationTask.isForced()) {
-                if (regenerationTask.isForced() || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
+            restrictedItem = RaidCraft.getComponent(WorldControlPlugin.class).getRestrictedItemManager().getRestrictedItems().get(log.getBlockBeforeMaterial());
+            if (restrictedItem != null || regenerationTask.isForced()) {
+                if (regenerationTask.isForced() || DateUtil.getTimeStamp(log.getTime()) / 1000 + restrictedItem.getRegenerationTime() + (restrictedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                     regenerateRecursive(log.getLocation());
                     continue; // skip because log is already added
                 }
@@ -58,9 +58,9 @@ public class CollectBlocksTask implements Runnable {
 
             // check placed blocks
             if(log.getBlockBeforeMaterial() == Material.AIR) {
-                allowedItem = RaidCraft.getComponent(WorldControlPlugin.class).getAllowedItemManager().getAllowedItems().get(log.getBlockAfterMaterial());
-                if (allowedItem != null || regenerationTask.isForced()) {
-                    if (regenerationTask.isForced() || DateUtil.getTimeStamp(log.getTime()) / 1000 + allowedItem.getRegenerationTime() + (allowedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
+                restrictedItem = RaidCraft.getComponent(WorldControlPlugin.class).getRestrictedItemManager().getRestrictedItems().get(log.getBlockAfterMaterial());
+                if (restrictedItem != null || regenerationTask.isForced()) {
+                    if (regenerationTask.isForced() || DateUtil.getTimeStamp(log.getTime()) / 1000 + restrictedItem.getRegenerationTime() + (restrictedItem.getRegenerationTime() * rnd) < System.currentTimeMillis() / 1000) {
                         regenerateRecursive(log.getLocation());
                         continue; // skip because log is already added
                     }

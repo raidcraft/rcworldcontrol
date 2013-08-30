@@ -2,7 +2,7 @@ package de.raidcraft.worldcontrol.tables;
 
 import de.raidcraft.RaidCraft;
 import de.raidcraft.api.database.Table;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
+import de.raidcraft.worldcontrol.restricteditem.RestrictedItem;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,9 +14,9 @@ import java.util.List;
  * Date: 14.11.12 - 06:13
  * Description:
  */
-public class AllowedItemsTable extends Table {
+public class RestrictedItemsTable extends Table {
 
-    public AllowedItemsTable() {
+    public RestrictedItemsTable() {
 
         super("allowed_items", "worldcontrol_");
     }
@@ -44,15 +44,15 @@ public class AllowedItemsTable extends Table {
         }
     }
 
-    public List<AllowedItem> getAllowedItems() {
+    public List<RestrictedItem> getAllRestrictedItems() {
 
-        List<AllowedItem> allowedItems = new ArrayList<>();
+        List<RestrictedItem> restrictedItems = new ArrayList<>();
         try {
             ResultSet resultSet = executeQuery(
                     "SELECT * FROM " + getTableName() + ";");
 
             while (resultSet.next()) {
-                allowedItems.add(new AllowedItem(
+                restrictedItems.add(new RestrictedItem(
                         resultSet.getString("material"),
                         resultSet.getInt("place_distance"),
                         resultSet.getBoolean("break"),
@@ -68,6 +68,6 @@ public class AllowedItemsTable extends Table {
             RaidCraft.LOGGER.warning(e.getMessage());
             e.printStackTrace();
         }
-        return allowedItems;
+        return restrictedItems;
     }
 }

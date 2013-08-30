@@ -1,4 +1,4 @@
-package de.raidcraft.worldcontrol.alloweditem;
+package de.raidcraft.worldcontrol.restricteditem;
 
 import org.bukkit.Material;
 
@@ -7,7 +7,7 @@ import org.bukkit.Material;
  * Date: 12.11.12 - 22:51
  * Description:
  */
-public class AllowedItem {
+public class RestrictedItem {
 
     private Material material;
     private boolean blockBreak;
@@ -18,7 +18,7 @@ public class AllowedItem {
     private int maxPlaceHeight;
     private boolean farmOnly;
 
-    public AllowedItem(String materialName, int placeDistance, boolean blockBreak, boolean blockPlace, boolean dropItem, long regenerationTime, int maxPlaceHeight, boolean farmOnly) {
+    public RestrictedItem(String materialName, int placeDistance, boolean blockBreak, boolean blockPlace, boolean dropItem, long regenerationTime, int maxPlaceHeight, boolean farmOnly) {
 
         this.material = Material.getMaterial(materialName);
         this.localPlaceDistance = placeDistance;

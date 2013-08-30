@@ -4,7 +4,7 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.database.Table;
 import de.raidcraft.worldcontrol.BlockLog;
 import de.raidcraft.worldcontrol.LogSaver;
-import de.raidcraft.worldcontrol.alloweditem.AllowedItem;
+import de.raidcraft.worldcontrol.restricteditem.RestrictedItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -129,7 +129,7 @@ public class BlockLogsTable extends Table {
         return blockLogs;
     }
 
-    public boolean isNearBlockPlaced(Block block, AllowedItem item) {
+    public boolean isNearBlockPlaced(Block block, RestrictedItem item) {
 
         try {
             ResultSet resultSet = executeQuery(
@@ -164,7 +164,7 @@ public class BlockLogsTable extends Table {
         }
     }
 
-    public boolean deleteLog(Location location, AllowedItem item) {
+    public boolean deleteLog(Location location, RestrictedItem item) {
 
         try {
             PreparedStatement statement = getConnection().prepareStatement("DELETE FROM " + getTableName() + " WHERE " +
