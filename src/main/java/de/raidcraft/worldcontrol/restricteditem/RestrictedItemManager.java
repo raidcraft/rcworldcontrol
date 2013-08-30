@@ -33,11 +33,15 @@ public class RestrictedItemManager {
         }
     }
 
-
     public RestrictedItem getRestrictedItem(Block block) {
 
-        if (restrictedItems.containsKey(block.getType())) {
-            return restrictedItems.get(block.getType());
+        return getRestrictedItem(block.getType());
+    }
+
+    public RestrictedItem getRestrictedItem(Material material) {
+
+        if (restrictedItems.containsKey(material)) {
+            return restrictedItems.get(material);
         }
         return null;
     }
