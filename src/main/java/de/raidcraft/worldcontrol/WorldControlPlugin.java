@@ -4,14 +4,13 @@ import de.raidcraft.RaidCraft;
 import de.raidcraft.api.BasePlugin;
 import de.raidcraft.api.config.ConfigurationBase;
 import de.raidcraft.api.config.Setting;
-import de.raidcraft.worldcontrol.restricteditem.RestrictedItemManager;
 import de.raidcraft.worldcontrol.commands.Commands;
 import de.raidcraft.worldcontrol.listener.BlockListener;
 import de.raidcraft.worldcontrol.listener.PlayerListener;
 import de.raidcraft.worldcontrol.regeneration.RegenerationManager;
-import de.raidcraft.worldcontrol.tables.RestrictedItemsTable;
+import de.raidcraft.worldcontrol.restricteditem.RestrictedItemManager;
 import de.raidcraft.worldcontrol.tables.BlockLogsTable;
-import de.raidcraft.worldcontrol.util.WorldGuardManager;
+import de.raidcraft.worldcontrol.tables.RestrictedItemsTable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -60,7 +59,7 @@ public class WorldControlPlugin extends BasePlugin {
 
         config = configure(new LocalConfiguration(this));
         restrictedItemManager.reload();
-        WorldGuardManager.INST.updateItemFarmFlags(Bukkit.getWorld(config.world));
+        //WorldGuardManager.INST.updateItemFarmFlags(Bukkit.getWorld(config.world));
     }
 
     @Override
