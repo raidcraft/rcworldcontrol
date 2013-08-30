@@ -50,6 +50,10 @@ public class RestrictedItem {
         return dropItem;
     }
 
+    /**
+     * Returns configured regeneration time in seconds
+     * @return regeneration cycle time in seconds
+     */
     public long getRegenerationTime() {
 
         return regenerationTime;
