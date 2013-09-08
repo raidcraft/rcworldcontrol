@@ -55,6 +55,11 @@ public class BlockListener implements Listener {
             return;
         }
 
+        // check if farm
+        if(WorldGuardManager.INST.isFarm(event.getBlock().getLocation())) {
+            return;
+        }
+
         //check if location is region
         if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
@@ -115,6 +120,11 @@ public class BlockListener implements Listener {
         if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
+            return;
+        }
+
+        // check if farm
+        if(WorldGuardManager.INST.isFarm(event.getBlock().getLocation())) {
             return;
         }
 
@@ -193,6 +203,11 @@ public class BlockListener implements Listener {
             return;
         }
 
+        // check if farm
+        if(WorldGuardManager.INST.isFarm(event.getLocation())) {
+            return;
+        }
+
         //check if location is region
         if(WorldGuardManager.INST.isInUnknownRegion(event.getLocation())) {
             return;
@@ -222,6 +237,11 @@ public class BlockListener implements Listener {
             return;
         }
 
+        // check if farm
+        if(WorldGuardManager.INST.isFarm(event.getBlock().getLocation())) {
+            return;
+        }
+
         //check if location is region
         if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
@@ -242,6 +262,11 @@ public class BlockListener implements Listener {
 
         if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             event.setCancelled(true);
+            return;
+        }
+
+        // check if farm
+        if(WorldGuardManager.INST.isFarm(event.getBlock().getLocation())) {
             return;
         }
 
