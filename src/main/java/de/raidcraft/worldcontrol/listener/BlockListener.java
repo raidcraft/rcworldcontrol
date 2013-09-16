@@ -41,9 +41,9 @@ public class BlockListener implements Listener {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
-        if (event.getPlayer().hasPermission("worldcontrol.block.place." + event.getBlock().getTypeId())) {
-            return;
-        }
+//        if (event.getPlayer().hasPermission("worldcontrol.block.place." + event.getBlock().getTypeId())) {
+//            return;
+//        }
 
         //check world
         if (!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
@@ -52,11 +52,6 @@ public class BlockListener implements Listener {
         if (LogSaver.INST.isBlocked() || !RaidCraft.getComponent(WorldControlPlugin.class).allowPhysics) {
             sendInteractSuppressWarning(event.getPlayer());
             event.setCancelled(true);
-            return;
-        }
-
-        // check if farm
-        if(WorldGuardManager.INST.isFarm(event.getBlock().getLocation())) {
             return;
         }
 
@@ -98,7 +93,10 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
+        // check if farm
+        if(!WorldGuardManager.INST.isFarm(event.getBlock().getLocation())) {
+            LogSaver.INST.addBlockLog(new BlockLog(event.getPlayer().getName(), event.getBlock().getLocation(), null, event.getBlock()));
+        }
     }
 
     @EventHandler(
@@ -110,9 +108,9 @@ public class BlockListener implements Listener {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
-        if (event.getPlayer().hasPermission("worldcontrol.block.break." + event.getBlock().getTypeId())) {
-            return;
-        }
+//        if (event.getPlayer().hasPermission("worldcontrol.block.break." + event.getBlock().getTypeId())) {
+//            return;
+//        }
         //check world
         if (!event.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(RaidCraft.getComponent(WorldControlPlugin.class).config.world))
             return;
