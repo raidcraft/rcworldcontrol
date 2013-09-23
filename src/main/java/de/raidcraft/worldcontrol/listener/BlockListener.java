@@ -137,7 +137,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        // check if can placed
+        // check if can break
         if (!restrictedItem.canBlockBreak()) {
             event.setCancelled(true);
             return;
