@@ -6,9 +6,7 @@ import de.raidcraft.worldcontrol.LogSaver;
 import de.raidcraft.worldcontrol.WorldControlPlugin;
 import de.raidcraft.worldcontrol.restricteditem.RestrictedItem;
 import de.raidcraft.worldcontrol.util.WorldGuardManager;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -21,12 +19,55 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Author: Philip
  * Date: 13.11.12 - 06:27
  * Description:
  */
 public class BlockListener implements Listener {
+
+    private Map<String, List<Long>> preventedPlacements = new HashMap<>();
+
+    /**
+     * Prevent block place bugusing!!!
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockPlaceCancelled(BlockBreakEvent event) {
+
+        if(!event.isCancelled()) return;
+
+        // get placements or put new
+        List<Long> placements = preventedPlacements.get(event.getPlayer().getName());
+        if(placements == null) {
+            placements = new ArrayList<>();
+            preventedPlacements.put(event.getPlayer().getName(), placements);
+        }
+        // remove too old logs (1 sec.)
+        for(long time : new ArrayList<>(placements)) {
+            if(time + 1000 > System.currentTimeMillis()) {
+                placements.remove(time);
+            }
+        }
+        // put new one
+        placements.add(System.currentTimeMillis());
+        // check if player uses bug (after third failed block place)
+        if(placements.size() > 2) {
+            Bukkit.broadcastMessage("1");
+            placements.clear();
+            if(event.getPlayer().getLocation().getBlock().getRelative(0, -1, 0).getType() == Material.AIR) {
+                Location newLocation = event.getPlayer().getLocation().clone();
+                newLocation.setY(newLocation.getY() - 1);
+                event.getPlayer().teleport(newLocation);
+                Bukkit.broadcastMessage("2");
+            }
+        }
+    }
 
 
     @EventHandler(
