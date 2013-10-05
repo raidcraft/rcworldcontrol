@@ -40,7 +40,6 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlaceCancelled(BlockPlaceEvent event) {
 
-        Bukkit.broadcastMessage("0");
         if(!event.isCancelled()) return;
 
         // get placements or put new
@@ -51,7 +50,7 @@ public class BlockListener implements Listener {
         }
         // remove too old logs (1 sec.)
         for(long time : new ArrayList<>(placements)) {
-            if(time + 1000 > System.currentTimeMillis()) {
+            if(time + 1000 < System.currentTimeMillis()) {
                 placements.remove(time);
             }
         }
