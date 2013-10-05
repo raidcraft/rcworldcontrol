@@ -38,7 +38,7 @@ public class BlockListener implements Listener {
      * @param event
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockPlaceCancelled(BlockBreakEvent event) {
+    public void onBlockPlaceCancelled(BlockPlaceEvent event) {
 
         if(!event.isCancelled()) return;
 
