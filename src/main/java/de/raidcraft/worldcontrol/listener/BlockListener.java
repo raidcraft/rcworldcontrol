@@ -40,6 +40,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlaceCancelled(BlockPlaceEvent event) {
 
+        Bukkit.broadcastMessage("0");
         if(!event.isCancelled()) return;
 
         // get placements or put new
