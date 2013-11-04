@@ -268,7 +268,7 @@ public class BlockListener implements Listener {
         }
 
         //check if location is region
-        if(!WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
+        if(WorldGuardManager.INST.isInUnknownRegion(event.getBlock().getLocation())) {
             return;
         }
 
