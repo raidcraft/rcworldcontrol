@@ -24,28 +24,13 @@
     <name>WorldControl</name>
 
     <scm>
-        <developerConnection>scm:git:ssh://git@git.raid-craft.de:22109/worldcontrol.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@git.raid-craft.de:22109/raid-craft-de/worldcontrol.git</developerConnection>
       <tag>HEAD</tag>
-  </scm>
-
-    <repositories>
-        <repository>
-            <id>raidcraft</id>
-            <url>http://nexus.raid-craft.de/content/groups/public/</url>
-        </repository>
-    </repositories>
+    </scm>
 
     <parent>
         <groupId>de.raidcraft</groupId>
         <artifactId>masterpom</artifactId>
         <version>RELEASE</version>
     </parent>
-
-    <dependencies>
-        <dependency>
-            <groupId>de.raidcraft</groupId>
-            <artifactId>raidcraft-api</artifactId>
-            <version>${rc.version}</version>
-        </dependency>
-    </dependencies>
 </project>
