@@ -25,8 +25,15 @@
 
     <scm>
         <developerConnection>scm:git:ssh://git@git.raid-craft.de:22109/raid-craft-de/worldcontrol.git</developerConnection>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
     </scm>
+
+    <repositories>
+        <repository>
+            <id>raidcraft</id>
+            <url>http://nexus.raid-craft.de/content/groups/public/</url>
+        </repository>
+    </repositories>
 
     <parent>
         <groupId>de.raidcraft</groupId>
