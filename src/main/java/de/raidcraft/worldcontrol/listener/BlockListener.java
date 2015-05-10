@@ -34,9 +34,6 @@ public class BlockListener implements Listener {
     )
     public void onBlockPlace(BlockPlaceEvent event) {
 
-        // mark block as player placed
-        RaidCraft.setPlayerPlacedBlock(event.getBlock());
-
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
