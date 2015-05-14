@@ -94,8 +94,6 @@ public class RegenerationTask implements Runnable {
     private void regenerateBlockLog(BlockLog log) {
 
         log.getLocation().getBlock().setType(log.getBlockBeforeMaterial());
-        // remove mark
-        RaidCraft.removePlayerPlacedBlock(log.getBlock());
 
         byte dataByte = (byte) log.getBlockBeforeData();
 
