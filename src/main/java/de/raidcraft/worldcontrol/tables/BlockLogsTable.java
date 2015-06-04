@@ -92,7 +92,7 @@ public class BlockLogsTable extends Table {
                             ")"
             );
         } catch (SQLException e) {
-            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception in addLog: " + e.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class BlockLogsTable extends Table {
             statement.close();
             resultSet.close();
         } catch (SQLException e) {
-            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception in getAllLogs: " + e.getMessage());
         }
         return blockLogs;
     }
@@ -160,7 +160,7 @@ public class BlockLogsTable extends Table {
                     "DELETE FROM " + getTableName() + " WHERE id =  '" + id + "'"
             );
         } catch (SQLException e) {
-            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception in isNearBlockPlaced: " + e.getMessage());
         }
     }
 
@@ -193,7 +193,7 @@ public class BlockLogsTable extends Table {
                     "DELETE FROM " + getTableName()
             );
         } catch (SQLException e) {
-            RaidCraft.LOGGER.warning("[WC] SQL exception: " + e.getMessage());
+            RaidCraft.LOGGER.warning("[WC] SQL exception in deleteLog: " + e.getMessage());
         }
     }
 

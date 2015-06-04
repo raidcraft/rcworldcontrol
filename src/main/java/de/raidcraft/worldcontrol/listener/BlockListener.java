@@ -208,7 +208,7 @@ public class BlockListener implements Listener {
         }
 
         for (Block block : event.blockList()) {
-            LogSaver.INST.addBlockLog(new BlockLog(event.getEntityType().getName(), block.getLocation(), block, null));
+            LogSaver.INST.addBlockLog(new BlockLog(event.getEntityType().name(), block.getLocation(), block, null));
         }
     }
 
@@ -241,7 +241,7 @@ public class BlockListener implements Listener {
             return;
         }
 
-        LogSaver.INST.addBlockLog(new BlockLog(event.getEntity().getType().getName(), event.getBlock().getLocation(), event.getBlock(), null));
+        LogSaver.INST.addBlockLog(new BlockLog(event.getEntity().getType().name(), event.getBlock().getLocation(), event.getBlock(), null));
     }
 
     @EventHandler(
